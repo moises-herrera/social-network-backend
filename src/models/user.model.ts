@@ -1,6 +1,9 @@
 import { Schema, model } from 'mongoose';
 import { Role, User } from 'src/interfaces';
 
+/**
+ * The user schema definition.
+ */
 const UserSchema = new Schema<User>(
   {
     firstName: {
