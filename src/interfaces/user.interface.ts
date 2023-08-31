@@ -4,6 +4,9 @@ import { Auth, Role } from '.';
  * The user information.
  */
 export interface User extends Auth {
+  /** User id. */
+  _id: string;
+
   /** First name. */
   firstName: string;
 
