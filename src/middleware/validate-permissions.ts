@@ -1,6 +1,7 @@
 import { NextFunction, Response } from 'express';
 import { RequestExtended, Role } from 'src/interfaces';
-import { findById } from 'src/services/user.service';
+import * as articleService from 'src/services/article.service';
+import * as userService from 'src/services/user.service';
 import { HttpError, handleHttpError, verifyToken } from 'src/utils';
 
 /**
@@ -49,7 +50,7 @@ export const validateAdminRole = async (
   const { id } = req;
 
   try {
-    const user = await findById(id as string);
+    const user = await userService.findById(id as string);
 
     if (!user) {
       const error = new HttpError('User not found.', 404);
@@ -73,7 +74,7 @@ export const validateAdminRole = async (
 
 /**
  * Validate the permissions of a user.
- * 
+ *
  * @param req The request object.
  * @param res The response object.
  * @param next The next function.
@@ -89,7 +90,7 @@ export const validateUserSelfPermissions = async (
   } = req;
 
   try {
-    const user = await findById(currentUserId as string);
+    const user = await userService.findById(currentUserId as string);
 
     if (!user) {
       const error = new HttpError('User not found.', 404);
@@ -97,6 +98,56 @@ export const validateUserSelfPermissions = async (
     }
 
     if (user.role !== Role.Admin && currentUserId !== id) {
+      const error = new HttpError('You do not have permissions.', 403);
+      return handleHttpError(res, error);
+    }
+
+    next();
+  } catch (error) {
+    const httpError =
+      error instanceof HttpError
+        ? error
+        : new HttpError('Internal server error', 500);
+    return handleHttpError(res, httpError);
+  }
+};
+
+/**
+ * Validate article permissions.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ * @param next The next function.
+ */
+export const validateArticlePermissions = async (
+  req: RequestExtended,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const {
+    id: currentUserId,
+    params: { id: articleId },
+  } = req;
+
+  try {
+    const user = await userService.findById(currentUserId as string);
+
+    if (!user) {
+      const error = new HttpError('User not found.', 404);
+      return handleHttpError(res, error);
+    }
+
+    const article = await articleService.findById(articleId as string);
+
+    if (!article) {
+      const error = new HttpError('Article not found.', 404);
+      return handleHttpError(res, error);
+    }
+
+    if (
+      user.role !== Role.Admin &&
+      currentUserId !== article.userId.toString()
+    ) {
       const error = new HttpError('You do not have permissions.', 403);
       return handleHttpError(res, error);
     }
