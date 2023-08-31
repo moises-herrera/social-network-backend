@@ -38,7 +38,7 @@ router.put(
   [
     validateJwt,
     validateCommentPermissions,
-    check('title', 'Title is required').not().isEmpty(),
+    check('content', 'Content is required').not().isEmpty(),
   ],
   updateComment
 );
