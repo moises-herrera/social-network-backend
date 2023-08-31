@@ -1,12 +1,12 @@
-import { User } from '.';
+import { IUser } from '.';
 
 /**
  * The auth response.
  */
-export interface AuthResponse {
+export interface IAuthResponse {
   /** Access token. */
   accessToken: string;
 
   /** User data. */
-  user: User;
+  user: IUser;
 }

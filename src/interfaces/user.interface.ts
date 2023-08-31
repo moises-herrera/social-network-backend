@@ -1,12 +1,10 @@
-import { Auth, Role } from '.';
+import { Document, Model, Types } from 'mongoose';
+import { IAuth, Role } from '.';
 
 /**
  * The user information.
  */
-export interface User extends Auth {
-  /** User id. */
-  _id: string;
-
+export interface IUser extends IAuth {
   /** First name. */
   firstName: string;
 
@@ -27,4 +25,19 @@ export interface User extends Auth {
 
   /** If the email is verified. */
   isEmailVerified: boolean;
+
+  /** Articles of the user. */
+  articles: Types.ObjectId[];
+}
+
+/**
+ * Represents the user document that is stored in the database.
+ */
+export interface IUserDocument extends IUser, Document {}
+
+/**
+ * Represents the user mongoose model.
+ */
+export interface IUserModel extends Model<IUserDocument> {
+  buildUser(user: IUser): IUserDocument;
 }

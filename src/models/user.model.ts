@@ -1,10 +1,10 @@
 import { Schema, model } from 'mongoose';
-import { Role, User } from 'src/interfaces';
+import { Role, IUser, IUserDocument, IUserModel } from 'src/interfaces';
 
 /**
  * The user schema definition.
  */
-const UserSchema = new Schema<User>(
+const UserSchema = new Schema<IUserDocument>(
   {
     firstName: {
       type: String,
@@ -35,13 +35,23 @@ const UserSchema = new Schema<User>(
       type: Boolean,
       default: false,
     },
+    articles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'articles',
+        default: [],
+      },
+    ],
   },
   {
     timestamps: true,
-    versionKey: false,
   }
 );
 
-const UserModel = model('users', UserSchema);
+UserSchema.statics.buildUser = (args: IUser) => {
+  return new User(args);
+};
 
-export default UserModel;
+const User = model<IUserDocument, IUserModel>('users', UserSchema);
+
+export default User;

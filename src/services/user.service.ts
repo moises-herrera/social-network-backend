@@ -1,5 +1,12 @@
-import { Auth, AuthResponse, Role, StandardObject, User } from 'src/interfaces';
-import { UserModel } from 'src/models';
+import {
+  IAuth,
+  IAuthResponse,
+  Role,
+  IStandardObject,
+  IUser,
+  IUserDocument,
+} from 'src/interfaces';
+import { User } from 'src/models';
 import {
   encryptText,
   verifyEncryptedText,
@@ -12,8 +19,10 @@ import {
  *
  * @returns All users.
  */
-export const findAll = async (filter: StandardObject = {}): Promise<User[]> => {
-  const users = await UserModel.find(filter);
+export const findAll = async (
+  filter: IStandardObject = {}
+): Promise<IUserDocument[]> => {
+  const users = await User.find(filter);
   return users;
 };
 
@@ -23,8 +32,10 @@ export const findAll = async (filter: StandardObject = {}): Promise<User[]> => {
  * @param filter The filter to apply.
  * @returns The user found.
  */
-export const findOne = async (filter: StandardObject): Promise<User | null> => {
-  const user = await UserModel.findOne(filter);
+export const findOne = async (
+  filter: IStandardObject
+): Promise<IUserDocument | null> => {
+  const user = await User.findOne(filter);
   return user;
 };
 
@@ -33,7 +44,7 @@ export const findOne = async (filter: StandardObject): Promise<User | null> => {
  *
  * @returns The user found.
  */
-export const findById = async (id: string): Promise<User | null> => {
+export const findById = async (id: string): Promise<IUserDocument | null> => {
   const user = await findOne({ _id: id });
   return user;
 };
@@ -43,7 +54,7 @@ export const findById = async (id: string): Promise<User | null> => {
  *
  * @param user User data.
  */
-export const createOne = async (user: User): Promise<User> => {
+export const createOne = async (user: IUser): Promise<IUserDocument> => {
   const { email, password } = user;
   const existingUser = await findOne({ email });
 
@@ -53,7 +64,7 @@ export const createOne = async (user: User): Promise<User> => {
 
   const passwordEncrypted = await encryptText(password);
 
-  const createdUser = await UserModel.create({
+  const createdUser = await User.create({
     ...user,
     password: passwordEncrypted,
     role: Role.User,
@@ -68,7 +79,7 @@ export const createOne = async (user: User): Promise<User> => {
  * @param auth The auth data.
  * @returns The auth response.
  */
-export const loginUser = async (auth: Auth): Promise<AuthResponse> => {
+export const loginUser = async (auth: IAuth): Promise<IAuthResponse> => {
   const { email, password } = auth;
 
   const existingUser = await findOne({ email });
@@ -88,7 +99,7 @@ export const loginUser = async (auth: Auth): Promise<AuthResponse> => {
 
   const token = generateToken(existingUser._id);
 
-  const response: AuthResponse = {
+  const response: IAuthResponse = {
     accessToken: token,
     user: existingUser,
   };
@@ -105,9 +116,9 @@ export const loginUser = async (auth: Auth): Promise<AuthResponse> => {
  */
 export const updateOne = async (
   id: string,
-  user: User
-): Promise<User | null> => {
-  const updatedUser = await UserModel.findByIdAndUpdate(id, user, {
+  user: IUser
+): Promise<IUserDocument | null> => {
+  const updatedUser = await User.findByIdAndUpdate(id, user, {
     new: true,
   });
 
@@ -125,7 +136,7 @@ export const updateOne = async (
  * @returns The deleted user.
  */
 export const deleteOne = async (id: string) => {
-  const existingUser = await UserModel.findByIdAndDelete(id);
+  const existingUser = await User.findByIdAndDelete(id);
 
   if (!existingUser) {
     throw new HttpError('User not found.', 404);
@@ -140,7 +151,7 @@ export const deleteOne = async (id: string) => {
  * @param id The user id.
  * @returns The auth response.
  */
-export const renewToken = async (id: string): Promise<AuthResponse> => {
+export const renewToken = async (id: string): Promise<IAuthResponse> => {
   const user = await findById(id);
 
   if (!user) {
@@ -149,7 +160,7 @@ export const renewToken = async (id: string): Promise<AuthResponse> => {
 
   const token = generateToken(id);
 
-  const response: AuthResponse = {
+  const response: IAuthResponse = {
     accessToken: token,
     user,
   };
