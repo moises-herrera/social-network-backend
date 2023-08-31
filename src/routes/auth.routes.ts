@@ -5,8 +5,7 @@ import {
   register,
   validateToken,
 } from 'src/controllers/auth.controller';
-import { validateFields } from 'src/middleware';
-import { validateJwt } from 'src/middleware/validate-jwt';
+import { validateFields, validateJwt } from 'src/middleware';
 
 const router = Router();
 
