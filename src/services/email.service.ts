@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { EmailData } from 'src/interfaces';
 import { readFileSync } from 'fs';
-import { findOne } from './user.service';
+import { findOne } from 'src/services/user.service';
 import { HttpError, generateToken } from 'src/utils';
 
 const {
@@ -77,6 +77,41 @@ export const sendConfirmationEmail = async (
     from: EMAIL_USER as string,
     to: recipient,
     subject: 'Verifica tu dirección de email',
+    body: emailBody,
+  });
+};
+
+/**
+ * Sends a reset password email.
+ *
+ * @param recipient The email address of the recipient.
+ */
+export const sendResetPasswordEmail = async (
+  recipient: string
+): Promise<void> => {
+  const user = await findOne({ email: recipient });
+
+  if (!user) {
+    throw new HttpError('User not found.', 404);
+  }
+
+  let emailBody = readFileSync(
+    `${__dirname}/../email-templates/reset-password.html`,
+    'utf8'
+  );
+
+  const token = generateToken(user.id, { expiresIn: '1h' });
+
+  emailBody = emailBody.replace(/%FRONTEND_URL%/g, FRONTEND_URL as string);
+  emailBody = emailBody.replace(
+    /%RESET_LINK%/g,
+    `${FRONTEND_URL}/auth/reset-password?userId=${user.id}&token=${token}`
+  );
+
+  await sendEmail({
+    from: EMAIL_USER as string,
+    to: recipient,
+    subject: 'Restablece tu contraseña',
     body: emailBody,
   });
 };
