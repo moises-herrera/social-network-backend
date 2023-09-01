@@ -5,6 +5,7 @@ import {
   findAll,
   findById,
   updateOne,
+  verifyUserEmail,
 } from 'src/services/user.service';
 import { HttpError, handleHttpError } from 'src/utils';
 
@@ -80,6 +81,32 @@ export const deleteUser = async (
     const { id } = req.params;
 
     const responseUser = await deleteOne(id);
+
+    res.send(responseUser);
+  } catch (error) {
+    const httpError =
+      error instanceof HttpError
+        ? error
+        : new HttpError('Internal server error.', 500);
+
+    handleHttpError(res, httpError);
+  }
+};
+
+/**
+ * Verify user email.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ */
+export const verifyEmail = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.query.userId as string;
+
+    const responseUser = await verifyUserEmail(userId);
 
     res.send(responseUser);
   } catch (error) {

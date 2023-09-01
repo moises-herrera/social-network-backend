@@ -5,6 +5,7 @@ import {
   getUser,
   getUsers,
   updateUser,
+  verifyEmail,
 } from 'src/controllers/user.controller';
 import {
   validateAdminRole,
@@ -46,5 +47,10 @@ router.put(
  * Delete a user.
  */
 router.delete('/:id', [validateJwt, validateAdminRole], deleteUser);
+
+/**
+ * Verify user email.
+ */
+router.post('/verify-email', validateJwt, verifyEmail);
 
 export { router };
