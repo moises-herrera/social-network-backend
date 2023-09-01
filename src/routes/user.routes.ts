@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
 import {
+  changePassword,
   deleteUser,
   getUser,
   getUsers,
@@ -52,5 +53,10 @@ router.delete('/:id', [validateJwt, validateAdminRole], deleteUser);
  * Verify user email.
  */
 router.post('/verify-email', validateJwt, verifyEmail);
+
+/**
+ * Change user password.
+ */
+router.post('/:id/password', validateJwt, changePassword);
 
 export { router };

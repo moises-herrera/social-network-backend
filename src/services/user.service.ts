@@ -118,13 +118,25 @@ export const updateOne = async (
   id: string,
   user: IUser
 ): Promise<IUserDocument | null> => {
-  const updatedUser = await User.findByIdAndUpdate(id, user, {
-    new: true,
-  });
+  const userToUpdate = await findById(id);
 
-  if (!updatedUser) {
+  if (!userToUpdate) {
     throw new HttpError('User not found.', 404);
   }
+
+  if (userToUpdate.email !== user.email) {
+    const existingUser = await findOne({ email: user.email });
+
+    if (existingUser) {
+      throw new HttpError('There is already an account with the email', 400);
+    }
+  }
+
+  const { password, ...fields } = user;
+
+  const updatedUser = await User.findByIdAndUpdate(id, fields, {
+    new: true,
+  });
 
   return updatedUser;
 };
@@ -178,6 +190,31 @@ export const verifyUserEmail = async (id: string): Promise<IUserDocument> => {
   const user = await User.findByIdAndUpdate(
     id,
     { isEmailVerified: true },
+    {
+      new: true,
+    }
+  );
+
+  if (!user) {
+    throw new HttpError('User not found.', 404);
+  }
+
+  return user;
+};
+
+/**
+ * Change user password.
+ *
+ * @param id The user id.
+ * @returns The updated user.
+ */
+export const changeUserPassword = async (
+  id: string,
+  password: string
+): Promise<IUserDocument> => {
+  const user = await User.findByIdAndUpdate(
+    id,
+    { password },
     {
       new: true,
     }

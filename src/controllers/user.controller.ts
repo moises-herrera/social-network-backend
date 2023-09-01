@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { RequestExtended } from 'src/interfaces';
 import {
+  changeUserPassword,
   deleteOne,
   findAll,
   findById,
@@ -107,6 +108,33 @@ export const verifyEmail = async (
     const userId = req.query.userId as string;
 
     const responseUser = await verifyUserEmail(userId);
+
+    res.send(responseUser);
+  } catch (error) {
+    const httpError =
+      error instanceof HttpError
+        ? error
+        : new HttpError('Internal server error.', 500);
+
+    handleHttpError(res, httpError);
+  }
+};
+
+/**
+ * Change user password.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ */
+export const changePassword = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    const responseUser = await changeUserPassword(id, password);
 
     res.send(responseUser);
   } catch (error) {
