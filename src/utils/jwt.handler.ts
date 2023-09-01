@@ -1,4 +1,4 @@
-import { JwtPayload, sign, verify } from 'jsonwebtoken';
+import { JwtPayload, SignOptions, sign, verify } from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -6,10 +6,11 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
  * Generate JWT token.
  *
  * @param id The user id.
+ * @param options The options to use when generating the token.
  * @returns The generated token.
  */
-export const generateToken = (id: string): string => {
-  const token = sign({ id }, JWT_SECRET, { expiresIn: '1d' });
+export const generateToken = (id: string, options?: SignOptions): string => {
+  const token = sign({ id }, JWT_SECRET, options || { expiresIn: '1d' });
 
   return token;
 };

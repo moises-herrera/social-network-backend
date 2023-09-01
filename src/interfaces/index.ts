@@ -6,3 +6,4 @@ export * from './standard-object.interface';
 export * from './request-extended.interface';
 export * from './article.interface';
 export * from './comment.interface';
+export * from './email-data.interface';
