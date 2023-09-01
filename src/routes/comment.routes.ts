@@ -7,7 +7,11 @@ import {
   getComments,
   updateComment,
 } from 'src/controllers/comment.controller';
-import { validateJwt, validateCommentPermissions } from 'src/middleware';
+import {
+  validateJwt,
+  validateCommentPermissions,
+  validateFields,
+} from 'src/middleware';
 
 const router = Router();
 
@@ -26,7 +30,13 @@ router.get('/:id', validateJwt, getComment);
  */
 router.post(
   '/',
-  [validateJwt, check('content', 'Content is required').not().isEmpty()],
+  [
+    validateJwt,
+    check('content', 'Content is required').not().isEmpty(),
+    check('articleId', 'Article id is required').not().isEmpty(),
+    check('userId', 'User id is required').not().isEmpty(),
+    validateFields,
+  ],
   createComment
 );
 
@@ -39,6 +49,9 @@ router.put(
     validateJwt,
     validateCommentPermissions,
     check('content', 'Content is required').not().isEmpty(),
+    check('articleId', 'Article id is required').not().isEmpty(),
+    check('userId', 'User id is required').not().isEmpty(),
+    validateFields,
   ],
   updateComment
 );

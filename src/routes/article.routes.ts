@@ -7,7 +7,11 @@ import {
   getArticles,
   updateArticle,
 } from 'src/controllers/article.controller';
-import { validateJwt, validateArticlePermissions } from 'src/middleware';
+import {
+  validateJwt,
+  validateArticlePermissions,
+  validateFields,
+} from 'src/middleware';
 
 const router = Router();
 
@@ -29,7 +33,10 @@ router.post(
   [
     validateJwt,
     check('title', 'Title is required').not().isEmpty(),
+    check('topic', 'Topic is required').not().isEmpty(),
     check('description', 'Content is required').not().isEmpty(),
+    check('userId', 'User id is required').not().isEmpty(),
+    validateFields,
   ],
   createArticle
 );
@@ -43,7 +50,10 @@ router.put(
     validateJwt,
     validateArticlePermissions,
     check('title', 'Title is required').not().isEmpty(),
+    check('topic', 'Topic is required').not().isEmpty(),
     check('description', 'Content is required').not().isEmpty(),
+    check('userId', 'User id is required').not().isEmpty(),
+    validateFields,
   ],
   updateArticle
 );

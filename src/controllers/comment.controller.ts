@@ -55,7 +55,7 @@ export const getComment = async (
  * @param res The response object.
  */
 export const createComment = async (
-  req: Request,
+  req: RequestExtended,
   res: Response
 ): Promise<void> => {
   try {
@@ -63,6 +63,7 @@ export const createComment = async (
 
     res.send(comment);
   } catch (error) {
+    console.log(error);
     const httpError =
       error instanceof HttpError
         ? error

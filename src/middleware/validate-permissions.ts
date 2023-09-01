@@ -180,6 +180,8 @@ export const validateCommentPermissions = async (
     params: { id: commentId },
   } = req;
 
+  console.log(req.method);
+
   try {
     const user = await userService.findById(currentUserId as string);
 
