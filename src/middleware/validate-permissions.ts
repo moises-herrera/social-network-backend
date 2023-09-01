@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express';
-import { RequestExtended, Role } from 'src/interfaces';
+import { IArticleDocument, RequestExtended, Role } from 'src/interfaces';
 import * as articleService from 'src/services/article.service';
 import * as userService from 'src/services/user.service';
 import * as commentService from 'src/services/comment.service';
@@ -17,14 +17,13 @@ export const validateJwt = (
   res: Response,
   next: NextFunction
 ): void => {
-  const token = req.headers.authorization?.split(' ').pop() || '';
-
-  if (!token) {
-    const error = new HttpError('No token provided.', 401);
-    return handleHttpError(res, error);
-  }
-
   try {
+    const token = req.headers.authorization?.split(' ').pop() || '';
+
+    if (!token) {
+      throw new HttpError('No token provided.', 401);
+    }
+
     const { id } = verifyToken(token) as { id: string };
     req.id = id;
 
@@ -54,13 +53,11 @@ export const validateAdminRole = async (
     const user = await userService.findById(id as string);
 
     if (!user) {
-      const error = new HttpError('User not found.', 404);
-      return handleHttpError(res, error);
+      throw new HttpError('User not found.', 404);
     }
 
     if (user.role !== Role.Admin) {
-      const error = new HttpError('User is not an admin.', 403);
-      return handleHttpError(res, error);
+      throw new HttpError('User is not an admin.', 403);
     }
 
     next();
@@ -94,13 +91,11 @@ export const validateUserSelfPermissions = async (
     const user = await userService.findById(currentUserId as string);
 
     if (!user) {
-      const error = new HttpError('User not found.', 404);
-      return handleHttpError(res, error);
+      throw new HttpError('User not found.', 404);
     }
 
     if (user.role !== Role.Admin && currentUserId !== id) {
-      const error = new HttpError('You do not have permissions.', 403);
-      return handleHttpError(res, error);
+      throw new HttpError('You do not have permissions.', 403);
     }
 
     next();
@@ -134,23 +129,20 @@ export const validateArticlePermissions = async (
     const user = await userService.findById(currentUserId as string);
 
     if (!user) {
-      const error = new HttpError('User not found.', 404);
-      return handleHttpError(res, error);
+      throw new HttpError('User not found.', 404);
     }
 
     const article = await articleService.findById(articleId as string);
 
     if (!article) {
-      const error = new HttpError('Article not found.', 404);
-      return handleHttpError(res, error);
+      throw new HttpError('Article not found.', 404);
     }
 
     if (
       user.role !== Role.Admin &&
       currentUserId !== article.userId.toString()
     ) {
-      const error = new HttpError('You do not have permissions.', 403);
-      return handleHttpError(res, error);
+      throw new HttpError('You do not have permissions.', 403);
     }
 
     next();
@@ -178,31 +170,38 @@ export const validateCommentPermissions = async (
   const {
     id: currentUserId,
     params: { id: commentId },
+    method,
   } = req;
-
-  console.log(req.method);
 
   try {
     const user = await userService.findById(currentUserId as string);
 
     if (!user) {
-      const error = new HttpError('User not found.', 404);
-      return handleHttpError(res, error);
+      throw new HttpError('User not found.', 404);
     }
 
     const comment = await commentService.findById(commentId as string);
 
     if (!comment) {
-      const error = new HttpError('Comment not found.', 404);
-      return handleHttpError(res, error);
+      throw new HttpError('Comment not found.', 404);
     }
 
-    if (
-      user.role !== Role.Admin &&
-      currentUserId !== comment.userId.toString()
-    ) {
-      const error = new HttpError('You do not have permissions.', 403);
-      return handleHttpError(res, error);
+    const hasSelfPermissions =
+      user.role === Role.Admin || currentUserId === comment.userId.toString();
+    let article: IArticleDocument | null = null;
+
+    if (method === 'DELETE') {
+      article = await articleService.findById(comment.articleId.toString());
+
+      if (!article) {
+        throw new HttpError('Article not found.', 404);
+      }
+    }
+
+    const isOwner = article && currentUserId === article.userId.toString();
+
+    if (!hasSelfPermissions && !isOwner) {
+      throw new HttpError('You do not have permissions.', 403);
     }
 
     next();
