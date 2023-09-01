@@ -10,6 +10,9 @@ export interface IArticle {
   /** Image url. */
   image?: string;
 
+  /** Topic. */
+  topic: string;
+
   /** Description. */
   description: string;
 
