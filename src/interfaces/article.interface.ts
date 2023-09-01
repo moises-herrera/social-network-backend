@@ -21,6 +21,9 @@ export interface IArticle {
 
   /** Comments. */
   comments: Types.ObjectId[];
+
+  /** Likes. */
+  likes: Types.ObjectId[];
 }
 
 /**
