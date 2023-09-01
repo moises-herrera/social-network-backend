@@ -6,7 +6,6 @@ import { HttpError } from '.';
  *
  * @param res The response object.
  * @param error The error object.
- * @param errorRaw The raw error.
  */
 export const handleHttpError = (res: Response, error: HttpError) => {
   console.log(error);
