@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
-import { IArticle, IArticleDocument, IArticleModel } from 'src/interfaces';
+import { IPost, IPostDocument, IPostModel } from 'src/interfaces';
 
-const ArticleSchema = new Schema<IArticleDocument>(
+const PostSchema = new Schema<IPostDocument>(
   {
     title: {
       type: String,
@@ -30,19 +30,26 @@ const ArticleSchema = new Schema<IArticleDocument>(
         default: [],
       },
     ],
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'users',
+        default: [],
+      }
+    ]
   },
   {
     timestamps: true,
   }
 );
 
-ArticleSchema.statics.buildArticle = (article: IArticle) => {
-  return new Article(article);
+PostSchema.statics.buildPost = (post: IPost) => {
+  return new Post(post);
 };
 
-const Article = model<IArticleDocument, IArticleModel>(
-  'articles',
-  ArticleSchema
+const Post = model<IPostDocument, IPostModel>(
+  'posts',
+  PostSchema
 );
 
-export default Article;
+export default Post;

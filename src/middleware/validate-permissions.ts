@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express';
-import { IArticleDocument, RequestExtended, Role } from 'src/interfaces';
-import * as articleService from 'src/services/article.service';
+import { IPostDocument, RequestExtended, Role } from 'src/interfaces';
+import * as postService from 'src/services/post.service';
 import * as userService from 'src/services/user.service';
 import * as commentService from 'src/services/comment.service';
 import { HttpError, handleHttpError, verifyToken } from 'src/utils';
@@ -101,20 +101,20 @@ export const validateUserSelfPermissions = async (
 };
 
 /**
- * Validate article permissions.
+ * Validate post permissions.
  *
  * @param req The request object.
  * @param res The response object.
  * @param next The next function.
  */
-export const validateArticlePermissions = async (
+export const validatePostPermissions = async (
   req: RequestExtended,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   const {
     id: currentUserId,
-    params: { id: articleId },
+    params: { id: postId },
   } = req;
 
   try {
@@ -124,15 +124,15 @@ export const validateArticlePermissions = async (
       throw new HttpError('Usuario no encontrado', 404);
     }
 
-    const article = await articleService.findById(articleId as string);
+    const post = await postService.findById(postId as string);
 
-    if (!article) {
-      throw new HttpError('Articulo no encontrado', 404);
+    if (!post) {
+      throw new HttpError('Post no encontrado', 404);
     }
 
     if (
       user.role !== Role.Admin &&
-      currentUserId !== article.userId.toString()
+      currentUserId !== post.userId.toString()
     ) {
       throw new HttpError('No tiene permisos', 403);
     }
@@ -176,17 +176,17 @@ export const validateCommentPermissions = async (
 
     const hasSelfPermissions =
       user.role === Role.Admin || currentUserId === comment.userId.toString();
-    let article: IArticleDocument | null = null;
+    let post: IPostDocument | null = null;
 
     if (method === 'DELETE') {
-      article = await articleService.findById(comment.articleId.toString());
+      post = await postService.findById(comment.postId.toString());
 
-      if (!article) {
-        throw new HttpError('Articulo no encontrado', 404);
+      if (!post) {
+        throw new HttpError('Post no encontrado', 404);
       }
     }
 
-    const isOwner = article && currentUserId === article.userId.toString();
+    const isOwner = post && currentUserId === post.userId.toString();
 
     if (!hasSelfPermissions && !isOwner) {
       throw new HttpError('No tiene permisos', 403);

@@ -12,10 +12,10 @@ const CommentSchema = new Schema<ICommentDocument>(
       required: true,
       ref: 'users',
     },
-    articleId: {
+    postId: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: 'articles',
+      ref: 'posts',
     },
   },
   {

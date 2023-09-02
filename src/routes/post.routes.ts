@@ -1,32 +1,33 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
 import {
-  createArticle,
-  deleteArticle,
-  getArticle,
-  getArticles,
-  updateArticle,
-} from 'src/controllers/article.controller';
+  createPost,
+  deletePost,
+  getPost,
+  getPosts,
+  likePost,
+  updatePost,
+} from 'src/controllers/post.controller';
 import {
   validateJwt,
-  validateArticlePermissions,
+  validatePostPermissions,
   validateFields,
 } from 'src/middleware';
 
 const router = Router();
 
 /**
- * Get all articles.
+ * Get all posts.
  */
-router.get('/', validateJwt, getArticles);
+router.get('/', validateJwt, getPosts);
 
 /**
- * Get an article.
+ * Get a post.
  */
-router.get('/:id', validateJwt, getArticle);
+router.get('/:id', validateJwt, getPost);
 
 /**
- * Create an article.
+ * Create a post.
  */
 router.post(
   '/',
@@ -38,29 +39,34 @@ router.post(
     check('userId', 'User id is required').not().isEmpty(),
     validateFields,
   ],
-  createArticle
+  createPost
 );
 
 /**
- * Update an article.
+ * Update a post.
  */
 router.put(
   '/:id',
   [
     validateJwt,
-    validateArticlePermissions,
+    validatePostPermissions,
     check('title', 'Title is required').not().isEmpty(),
     check('topic', 'Topic is required').not().isEmpty(),
     check('description', 'Content is required').not().isEmpty(),
     check('userId', 'User id is required').not().isEmpty(),
     validateFields,
   ],
-  updateArticle
+  updatePost
 );
 
 /**
- * Delete an article.
+ * Delete a post.
  */
-router.delete('/:id', [validateJwt, validateArticlePermissions], deleteArticle);
+router.delete('/:id', [validateJwt, validatePostPermissions], deletePost);
+
+/**
+ * Like a post.
+ */
+router.post('/:id', validateJwt, likePost);
 
 export { router };

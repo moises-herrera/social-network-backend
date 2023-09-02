@@ -244,3 +244,32 @@ export const changeUserPassword = async (
 
   return user;
 };
+
+/**
+ * Follow a user.
+ *
+ * @param id The user id.
+ * @param followerId The follower id.
+ */
+export const followOne = async (
+  id: string,
+  followerId: string
+): Promise<IStandardResponse> => {
+  const user = await User.findByIdAndUpdate(
+    id,
+    { $push: { followers: followerId } },
+    {
+      new: true,
+    }
+  );
+
+  if (!user) {
+    throw new HttpError('Usuario no encontrado', 404);
+  }
+
+  const response: IStandardResponse = {
+    message: 'Usuario actualizado correctamente',
+  };
+
+  return response;
+};

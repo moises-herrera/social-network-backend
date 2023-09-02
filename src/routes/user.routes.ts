@@ -3,6 +3,7 @@ import { check } from 'express-validator';
 import {
   changePassword,
   deleteUser,
+  followUser,
   getUser,
   getUsers,
   updateUser,
@@ -59,5 +60,10 @@ router.post('/verify-email', validateJwt, verifyEmail);
  * Change user password.
  */
 router.post('/:id/password', validateJwt, changePassword);
+
+/**
+ * Follow user.
+ */
+router.post('/:id/follow', validateJwt, followUser);
 
 export { router };

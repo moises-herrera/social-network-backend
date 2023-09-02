@@ -40,10 +40,17 @@ const UserSchema = new Schema<IUserDocument>(
       type: Boolean,
       default: false,
     },
-    articles: [
+    posts: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'articles',
+        ref: 'posts',
+        default: [],
+      },
+    ],
+    followers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'users',
         default: [],
       },
     ],

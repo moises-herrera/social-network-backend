@@ -1,10 +1,10 @@
 import { Model, Types } from 'mongoose';
 
 /**
- * Represents the information of an article.
+ * Represents the information of a post.
  */
-export interface IArticle {
-  /** Article title. */
+export interface IPost {
+  /** Post title. */
   title: string;
 
   /** Image url. */
@@ -27,13 +27,13 @@ export interface IArticle {
 }
 
 /**
- * Represents the document of an article.
+ * Represents the document of a post.
  */
-export interface IArticleDocument extends IArticle, Document {}
+export interface IPostDocument extends IPost, Document {}
 
 /**
- * Represents the model of an article.
+ * Represents the model of a post.
  */
-export interface IArticleModel extends Model<IArticleDocument> {
-  buildArticle(article: IArticle): IArticleDocument;
+export interface IPostModel extends Model<IPostDocument> {
+  buildPost(post: IPost): IPostDocument;
 }

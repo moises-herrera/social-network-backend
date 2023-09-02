@@ -5,99 +5,116 @@ import {
   deleteOne,
   findAll,
   findById,
+  likeOne,
   updateOne,
-} from 'src/services/article.service';
+} from 'src/services/post.service';
 import { handleHttpError } from 'src/utils';
 
 /**
- * Get all articles.
+ * Get all posts.
  *
  * @param _req The request object.
  * @param res The response object.
  */
-export const getArticles = async (
-  _req: Request,
-  res: Response
-): Promise<void> => {
-  const articles = await findAll();
-  res.send(articles);
+export const getPosts = async (_req: Request, res: Response): Promise<void> => {
+  const posts = await findAll();
+  res.send(posts);
 };
 
 /**
- * Get a article.
+ * Get a post.
  *
  * @param req The request object.
  * @param res The response object.
  */
-export const getArticle = async (
+export const getPost = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const post = await findById(id);
+
+    res.send(post);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Create a post.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ */
+export const createPost = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const post = await createOne(req.body);
+
+    res.send(post);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Update a post.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ */
+export const updatePost = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const article = await findById(id);
+    const responsePost = await updateOne(id, req.body);
 
-    res.send(article);
+    res.send(responsePost);
   } catch (error) {
     handleHttpError(res, error);
   }
 };
 
 /**
- * Create an article.
+ * Delete a post.
  *
  * @param req The request object.
  * @param res The response object.
  */
-export const createArticle = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const article = await createOne(req.body);
-
-    res.send(article);
-  } catch (error) {
-    handleHttpError(res, error);
-  }
-};
-
-/**
- * Update a article.
- *
- * @param req The request object.
- * @param res The response object.
- */
-export const updateArticle = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { id } = req.params;
-    const responseArticle = await updateOne(id, req.body);
-
-    res.send(responseArticle);
-  } catch (error) {
-    handleHttpError(res, error);
-  }
-};
-
-/**
- * Delete a article.
- *
- * @param req The request object.
- * @param res The response object.
- */
-export const deleteArticle = async (
+export const deletePost = async (
   req: RequestExtended,
   res: Response
 ): Promise<void> => {
   try {
     const { id } = req.params;
 
-    const responseArticle = await deleteOne(id);
+    const responsePost = await deleteOne(id);
 
-    res.send(responseArticle);
+    res.send(responsePost);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Like a post.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ */
+export const likePost = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id: userId } = req;
+    const { id: postId } = req.params;
+
+    const responsePost = await likeOne(postId, userId as string);
+
+    res.send(responsePost);
   } catch (error) {
     handleHttpError(res, error);
   }

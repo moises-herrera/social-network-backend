@@ -5,6 +5,7 @@ import {
   deleteOne,
   findAll,
   findById,
+  followOne,
   updateOne,
   verifyUserEmail,
 } from 'src/services/user.service';
@@ -115,6 +116,28 @@ export const changePassword = async (
     const { password } = req.body;
 
     const responseUser = await changeUserPassword(id, password);
+
+    res.send(responseUser);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Follow user.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ */
+export const followUser = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id: userId } = req;
+    const { id: followerId } = req.params;
+
+    const responseUser = await followOne(userId as string, followerId);
 
     res.send(responseUser);
   } catch (error) {

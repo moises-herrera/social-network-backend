@@ -33,7 +33,7 @@ router.post(
   [
     validateJwt,
     check('content', 'Content is required').not().isEmpty(),
-    check('articleId', 'Article id is required').not().isEmpty(),
+    check('postId', 'Post id is required').not().isEmpty(),
     check('userId', 'User id is required').not().isEmpty(),
     validateFields,
   ],
@@ -49,7 +49,7 @@ router.put(
     validateJwt,
     validateCommentPermissions,
     check('content', 'Content is required').not().isEmpty(),
-    check('articleId', 'Article id is required').not().isEmpty(),
+    check('postId', 'Post id is required').not().isEmpty(),
     check('userId', 'User id is required').not().isEmpty(),
     validateFields,
   ],

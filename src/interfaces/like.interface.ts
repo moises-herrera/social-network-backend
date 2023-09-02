@@ -7,8 +7,8 @@ export interface ILike {
   /** User id. */
   userId: Types.ObjectId;
 
-  /** Article id. */
-  articleId: Types.ObjectId;
+  /** Post id. */
+  postId: Types.ObjectId;
 }
 
 /**
