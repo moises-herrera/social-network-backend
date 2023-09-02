@@ -1,4 +1,9 @@
-import { IComment, ICommentDocument, IStandardObject } from 'src/interfaces';
+import {
+  IComment,
+  ICommentDocument,
+  IStandardObject,
+  IStandardResponse,
+} from 'src/interfaces';
 import { Comment } from 'src/models';
 import { HttpError } from 'src/utils';
 
@@ -69,7 +74,7 @@ export const updateOne = async (
   });
 
   if (!updatedComment) {
-    throw new HttpError('Comment not found.', 404);
+    throw new HttpError('Comentario no encontrado', 404);
   }
 
   return updatedComment;
@@ -81,14 +86,16 @@ export const updateOne = async (
  * @param id The comment id.
  * @returns The deleted comment.
  */
-export const deleteOne = async (
-  id: string
-): Promise<ICommentDocument | null> => {
+export const deleteOne = async (id: string): Promise<IStandardResponse> => {
   const deletedComment = await Comment.findByIdAndDelete(id);
 
   if (!deletedComment) {
-    throw new HttpError('Comment not found.', 404);
+    throw new HttpError('Comentario no encontrado', 404);
   }
 
-  return deletedComment;
+  const response: IStandardResponse = {
+    message: 'Comentario eliminado correctamente',
+  };
+
+  return response;
 };

@@ -8,7 +8,7 @@ import {
   updateOne,
   verifyUserEmail,
 } from 'src/services/user.service';
-import { HttpError, handleHttpError } from 'src/utils';
+import { handleHttpError } from 'src/utils';
 
 /**
  * Get all users.
@@ -34,12 +34,7 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
 
     res.send(user);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -59,12 +54,7 @@ export const updateUser = async (
 
     res.send(responseUser);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -85,12 +75,7 @@ export const deleteUser = async (
 
     res.send(responseUser);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -111,12 +96,7 @@ export const verifyEmail = async (
 
     res.send(responseUser);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -138,11 +118,6 @@ export const changePassword = async (
 
     res.send(responseUser);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };

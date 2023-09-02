@@ -7,7 +7,7 @@ import {
   findById,
   updateOne,
 } from 'src/services/article.service';
-import { HttpError, handleHttpError } from 'src/utils';
+import { handleHttpError } from 'src/utils';
 
 /**
  * Get all articles.
@@ -39,12 +39,7 @@ export const getArticle = async (
 
     res.send(article);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -63,12 +58,7 @@ export const createArticle = async (
 
     res.send(article);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -88,12 +78,7 @@ export const updateArticle = async (
 
     res.send(responseArticle);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -114,11 +99,6 @@ export const deleteArticle = async (
 
     res.send(responseArticle);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };

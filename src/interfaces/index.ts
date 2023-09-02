@@ -9,3 +9,4 @@ export * from './comment.interface';
 export * from './email-data.interface';
 export * from './send-email.interface';
 export * from './like.interface';
+export * from './standard-response.interface';

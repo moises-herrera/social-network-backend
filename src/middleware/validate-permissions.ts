@@ -21,7 +21,7 @@ export const validateJwt = (
     const token = req.headers.authorization?.split(' ').pop() || '';
 
     if (!token) {
-      throw new HttpError('No token provided.', 401);
+      throw new HttpError('Sin autorización', 401);
     }
 
     const { id } = verifyToken(token) as { id: string };
@@ -30,7 +30,7 @@ export const validateJwt = (
     next();
   } catch (error) {
     const httpError =
-      error instanceof HttpError ? error : new HttpError('Invalid token.', 401);
+      error instanceof HttpError ? error : new HttpError('Token invalido', 401);
     return handleHttpError(res, httpError);
   }
 };
@@ -53,20 +53,16 @@ export const validateAdminRole = async (
     const user = await userService.findById(id as string);
 
     if (!user) {
-      throw new HttpError('User not found.', 404);
+      throw new HttpError('Usuario no encontrado', 404);
     }
 
     if (user.role !== Role.Admin) {
-      throw new HttpError('User is not an admin.', 403);
+      throw new HttpError('Debe ser administrador', 403);
     }
 
     next();
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error', 500);
-    return handleHttpError(res, httpError);
+    return handleHttpError(res, error);
   }
 };
 
@@ -91,20 +87,16 @@ export const validateUserSelfPermissions = async (
     const user = await userService.findById(currentUserId as string);
 
     if (!user) {
-      throw new HttpError('User not found.', 404);
+      throw new HttpError('Usuario no encontrado', 404);
     }
 
     if (user.role !== Role.Admin && currentUserId !== id) {
-      throw new HttpError('You do not have permissions.', 403);
+      throw new HttpError('No tiene permisos', 403);
     }
 
     next();
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error', 500);
-    return handleHttpError(res, httpError);
+    return handleHttpError(res, error);
   }
 };
 
@@ -129,29 +121,25 @@ export const validateArticlePermissions = async (
     const user = await userService.findById(currentUserId as string);
 
     if (!user) {
-      throw new HttpError('User not found.', 404);
+      throw new HttpError('Usuario no encontrado', 404);
     }
 
     const article = await articleService.findById(articleId as string);
 
     if (!article) {
-      throw new HttpError('Article not found.', 404);
+      throw new HttpError('Articulo no encontrado', 404);
     }
 
     if (
       user.role !== Role.Admin &&
       currentUserId !== article.userId.toString()
     ) {
-      throw new HttpError('You do not have permissions.', 403);
+      throw new HttpError('No tiene permisos', 403);
     }
 
     next();
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error', 500);
-    return handleHttpError(res, httpError);
+    return handleHttpError(res, error);
   }
 };
 
@@ -177,13 +165,13 @@ export const validateCommentPermissions = async (
     const user = await userService.findById(currentUserId as string);
 
     if (!user) {
-      throw new HttpError('User not found.', 404);
+      throw new HttpError('Usuario no encontrado', 404);
     }
 
     const comment = await commentService.findById(commentId as string);
 
     if (!comment) {
-      throw new HttpError('Comment not found.', 404);
+      throw new HttpError('Comentario no encontrado', 404);
     }
 
     const hasSelfPermissions =
@@ -194,22 +182,18 @@ export const validateCommentPermissions = async (
       article = await articleService.findById(comment.articleId.toString());
 
       if (!article) {
-        throw new HttpError('Article not found.', 404);
+        throw new HttpError('Articulo no encontrado', 404);
       }
     }
 
     const isOwner = article && currentUserId === article.userId.toString();
 
     if (!hasSelfPermissions && !isOwner) {
-      throw new HttpError('You do not have permissions.', 403);
+      throw new HttpError('No tiene permisos', 403);
     }
 
     next();
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error', 500);
-    return handleHttpError(res, httpError);
+    return handleHttpError(res, error);
   }
 };

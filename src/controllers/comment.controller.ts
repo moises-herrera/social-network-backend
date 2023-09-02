@@ -7,7 +7,7 @@ import {
   findById,
   updateOne,
 } from 'src/services/comment.service';
-import { HttpError, handleHttpError } from 'src/utils';
+import { handleHttpError } from 'src/utils';
 
 /**
  * Get all comments.
@@ -39,12 +39,7 @@ export const getComment = async (
 
     res.send(comment);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -64,12 +59,7 @@ export const createComment = async (
     res.send(comment);
   } catch (error) {
     console.log(error);
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -89,12 +79,7 @@ export const updateComment = async (
 
     res.send(responseComment);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };
 
@@ -115,11 +100,6 @@ export const deleteComment = async (
 
     res.send(responseComment);
   } catch (error) {
-    const httpError =
-      error instanceof HttpError
-        ? error
-        : new HttpError('Internal server error.', 500);
-
-    handleHttpError(res, httpError);
+    handleHttpError(res, error);
   }
 };

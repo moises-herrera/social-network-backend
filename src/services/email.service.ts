@@ -58,7 +58,7 @@ export const sendConfirmationEmail = async (
   const user = await findOne({ email: recipient });
 
   if (!user) {
-    throw new HttpError('User not found.', 404);
+    throw new HttpError('Usuario no encontrado', 404);
   }
 
   let emailBody = readFileSync(
@@ -92,7 +92,7 @@ export const sendResetPasswordEmail = async (
   const user = await findOne({ email: recipient });
 
   if (!user) {
-    throw new HttpError('User not found.', 404);
+    throw new HttpError('Usuario no encontrado', 404);
   }
 
   let emailBody = readFileSync(

@@ -5,6 +5,7 @@ import {
   IStandardObject,
   IUser,
   IUserDocument,
+  IStandardResponse,
 } from 'src/interfaces';
 import { User } from 'src/models';
 import {
@@ -55,11 +56,16 @@ export const findById = async (id: string): Promise<IUserDocument | null> => {
  * @param user User data.
  */
 export const createOne = async (user: IUser): Promise<IUserDocument> => {
-  const { email, password } = user;
-  const existingUser = await findOne({ email });
+  const { username, email, password } = user;
+  const existingUser = await findOne({
+    $or: [{ username }, { email }],
+  });
 
   if (existingUser) {
-    throw new HttpError('User already exists.', 400);
+    throw new HttpError(
+      'Ya existe una cuenta con ese nombre de usuario o email',
+      400
+    );
   }
 
   const passwordEncrypted = await encryptText(password);
@@ -85,7 +91,7 @@ export const loginUser = async (auth: IAuth): Promise<IAuthResponse> => {
   const existingUser = await findOne({ email });
 
   if (!existingUser) {
-    throw new HttpError('User not found.', 404);
+    throw new HttpError('Usuario no encontrado', 404);
   }
 
   const isPasswordValid = await verifyEncryptedText(
@@ -94,7 +100,7 @@ export const loginUser = async (auth: IAuth): Promise<IAuthResponse> => {
   );
 
   if (!isPasswordValid) {
-    throw new HttpError('Email or password invalid.', 400);
+    throw new HttpError('Email o contraseña invalidos', 400);
   }
 
   const token = generateToken(existingUser._id);
@@ -121,14 +127,22 @@ export const updateOne = async (
   const userToUpdate = await findById(id);
 
   if (!userToUpdate) {
-    throw new HttpError('User not found.', 404);
+    throw new HttpError('Usuario no encontrado', 404);
   }
 
-  if (userToUpdate.email !== user.email) {
-    const existingUser = await findOne({ email: user.email });
+  if (
+    userToUpdate.email !== user.email ||
+    userToUpdate.username !== user.username
+  ) {
+    const existingUser = await findOne({
+      $or: [{ username: user.username }, { email: user.email }],
+    });
 
     if (existingUser) {
-      throw new HttpError('There is already an account with the email', 400);
+      throw new HttpError(
+        'Ya existe una cuenta con ese nombre de usuario o email',
+        400
+      );
     }
   }
 
@@ -147,14 +161,18 @@ export const updateOne = async (
  * @param id The user id.
  * @returns The deleted user.
  */
-export const deleteOne = async (id: string) => {
+export const deleteOne = async (id: string): Promise<IStandardResponse> => {
   const existingUser = await User.findByIdAndDelete(id);
 
   if (!existingUser) {
-    throw new HttpError('User not found.', 404);
+    throw new HttpError('Usuario no encontrado', 404);
   }
 
-  return existingUser;
+  const response: IStandardResponse = {
+    message: 'Usuario eliminado correctamente',
+  };
+
+  return response;
 };
 
 /**
@@ -167,7 +185,7 @@ export const renewToken = async (id: string): Promise<IAuthResponse> => {
   const user = await findById(id);
 
   if (!user) {
-    throw new HttpError('User not found.', 404);
+    throw new HttpError('Usuario no encontrado', 404);
   }
 
   const token = generateToken(id);
@@ -196,7 +214,7 @@ export const verifyUserEmail = async (id: string): Promise<IUserDocument> => {
   );
 
   if (!user) {
-    throw new HttpError('User not found.', 404);
+    throw new HttpError('Usuario no encontrado', 404);
   }
 
   return user;
@@ -221,7 +239,7 @@ export const changeUserPassword = async (
   );
 
   if (!user) {
-    throw new HttpError('User not found.', 404);
+    throw new HttpError('Usuario no encontrado', 404);
   }
 
   return user;

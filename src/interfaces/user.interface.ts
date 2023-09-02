@@ -14,6 +14,9 @@ export interface IUser extends IAuth {
   /** Avatar url. */
   avatar?: string;
 
+  /** Username. */
+  username: string;
+
   /** Email address. */
   email: string;
 

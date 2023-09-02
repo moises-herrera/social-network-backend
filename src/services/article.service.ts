@@ -1,4 +1,9 @@
-import { IArticle, IArticleDocument, IStandardObject } from 'src/interfaces';
+import {
+  IArticle,
+  IArticleDocument,
+  IStandardObject,
+  IStandardResponse,
+} from 'src/interfaces';
 import { Article } from 'src/models';
 import { HttpError } from 'src/utils';
 
@@ -69,7 +74,7 @@ export const updateOne = async (
   });
 
   if (!updatedArticle) {
-    throw new HttpError('Article not found.', 404);
+    throw new HttpError('Articulo no encontrado', 404);
   }
 
   return updatedArticle;
@@ -81,14 +86,16 @@ export const updateOne = async (
  * @param id The article id.
  * @returns The deleted article.
  */
-export const deleteOne = async (
-  id: string
-): Promise<IArticleDocument | null> => {
+export const deleteOne = async (id: string): Promise<IStandardResponse> => {
   const deletedArticle = await Article.findByIdAndDelete(id);
 
   if (!deletedArticle) {
-    throw new HttpError('Article not found.', 404);
+    throw new HttpError('Articulo no encontrado', 404);
   }
 
-  return deletedArticle;
+  const response: IStandardResponse = {
+    message: 'Comentario eliminado correctamente',
+  };
+
+  return response;
 };
