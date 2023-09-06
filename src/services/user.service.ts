@@ -55,7 +55,7 @@ export const findById = async (id: string): Promise<IUserDocument | null> => {
  *
  * @param user User data.
  */
-export const createOne = async (user: IUser): Promise<IUserDocument> => {
+export const createOne = async (user: IUser): Promise<IAuthResponse> => {
   const { username, email, password } = user;
   const existingUser = await findOne({
     $or: [{ username }, { email }],
@@ -76,7 +76,14 @@ export const createOne = async (user: IUser): Promise<IUserDocument> => {
     role: Role.User,
   });
 
-  return createdUser;
+  const token = generateToken(createdUser._id);
+
+  const response: IAuthResponse = {
+    accessToken: token,
+    user: createdUser,
+  };
+
+  return response;
 };
 
 /**
