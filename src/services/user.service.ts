@@ -139,17 +139,20 @@ export const updateOne = async (
     throw new HttpError('Usuario no encontrado', 404);
   }
 
-  if (
-    userToUpdate.email !== user.email ||
-    userToUpdate.username !== user.username
-  ) {
-    const existingUser = await findOne({
-      $or: [{ username: user.username }, { email: user.email }],
-    });
+  if (userToUpdate.email !== user.email) {
+    const existingUser = await findOne({ email: user.email });
+
+    if (existingUser) {
+      throw new HttpError('Ya existe una cuenta con ese email', 400);
+    }
+  }
+
+  if (userToUpdate.username !== user.username) {
+    const existingUser = await findOne({ username: user.username });
 
     if (existingUser) {
       throw new HttpError(
-        'Ya existe una cuenta con ese nombre de usuario o email',
+        'Ya existe una cuenta con ese nombre de usuario',
         400
       );
     }
