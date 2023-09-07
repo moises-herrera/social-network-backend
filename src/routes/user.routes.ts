@@ -53,7 +53,7 @@ router.delete('/:id', [validateJwt, validateAdminRole], deleteUser);
 /**
  * Verify user email.
  */
-router.post('/verify-email', validateJwt, verifyEmail);
+router.post('/:id/verify-email', validateJwt, verifyEmail);
 
 /**
  * Change user password.

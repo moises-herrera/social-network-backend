@@ -229,7 +229,9 @@ export const renewToken = async (id: string): Promise<IAuthResponse> => {
  * @param id The user id.
  * @returns The updated user.
  */
-export const verifyUserEmail = async (id: string): Promise<IUserDocument> => {
+export const verifyUserEmail = async (
+  id: string
+): Promise<IStandardResponse> => {
   const user = await User.findByIdAndUpdate(
     id,
     { isEmailVerified: true },
@@ -242,7 +244,11 @@ export const verifyUserEmail = async (id: string): Promise<IUserDocument> => {
     throw new HttpError('Usuario no encontrado', 404);
   }
 
-  return user;
+  const response: IStandardResponse = {
+    message: 'Email verificado correctamente',
+  };
+
+  return response;
 };
 
 /**

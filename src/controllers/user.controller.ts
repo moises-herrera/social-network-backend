@@ -93,9 +93,9 @@ export const verifyEmail = async (
   res: Response
 ): Promise<void> => {
   try {
-    const userId = req.query.userId as string;
+    const { id } = req.params;
 
-    const responseUser = await verifyUserEmail(userId);
+    const responseUser = await verifyUserEmail(id);
 
     res.send(responseUser);
   } catch (error) {
