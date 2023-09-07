@@ -155,17 +155,25 @@ export const updateOne = async (
     }
   }
 
-  const { password, ...fields } = user;
-
-  if (avatarBuffer) {
-    const avatarUrl = !userToUpdate.avatar
-      ? await uploadImage('users', avatarBuffer)
-      : await updateImage('users', avatarBuffer, userToUpdate.avatar as string);
-
-    fields.avatar = avatarUrl;
+  if (user.password) {
+    const userPassword = user.password;
+    user.password = await encryptText(userPassword);
   }
 
-  const updatedUser = await User.findByIdAndUpdate(id, fields, {
+  let avatarUrl: string | undefined;
+
+  if (avatarBuffer) {
+    avatarUrl = !userToUpdate.avatar
+      ? await uploadImage('users', avatarBuffer)
+      : await updateImage('users', avatarBuffer, userToUpdate.avatar);
+  }
+
+  const userData: IUser = {
+    ...user,
+    avatar: avatarUrl || userToUpdate.avatar,
+  };
+
+  const updatedUser = await User.findByIdAndUpdate(id, userData, {
     new: true,
   });
 
