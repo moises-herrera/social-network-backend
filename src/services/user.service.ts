@@ -241,15 +241,16 @@ export const verifyUserEmail = async (id: string): Promise<IUserDocument> => {
  * Change user password.
  *
  * @param id The user id.
- * @returns The updated user.
+ * @returns Standard response.
  */
 export const changeUserPassword = async (
   id: string,
   password: string
-): Promise<IUserDocument> => {
+): Promise<IStandardResponse> => {
+  const encryptedPassword = await encryptText(password);
   const user = await User.findByIdAndUpdate(
     id,
-    { password },
+    { password: encryptedPassword },
     {
       new: true,
     }
@@ -259,7 +260,11 @@ export const changeUserPassword = async (
     throw new HttpError('Usuario no encontrado', 404);
   }
 
-  return user;
+  const response: IStandardResponse = {
+    message: 'Contraseña actualizada correctamente',
+  };
+
+  return response;
 };
 
 /**

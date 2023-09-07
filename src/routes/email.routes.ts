@@ -11,6 +11,6 @@ router.post('/confirm-email', confirmEmail);
 /**
  * Route to send a reset password email.
  */
-router.post('/reset-password', resetPassword);
+router.post('/forgot-password', resetPassword);
 
 export { router };
