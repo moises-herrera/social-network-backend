@@ -6,6 +6,7 @@ import {
   findAll,
   findById,
   followOne,
+  unFollowOne,
   updateOne,
   verifyUserEmail,
 } from 'src/services/user.service';
@@ -136,10 +137,32 @@ export const followUser = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { id: userId } = req;
-    const { id: followerId } = req.params;
+    const { id: followerId } = req;
+    const { id: userId } = req.params;
 
-    const responseUser = await followOne(userId as string, followerId);
+    const responseUser = await followOne(userId, followerId as string);
+
+    res.send(responseUser);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Unfollow user.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ */
+export const unFollowUser = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id: followerId } = req;
+    const { id: userId } = req.params;
+
+    const responseUser = await unFollowOne(userId, followerId as string);
 
     res.send(responseUser);
   } catch (error) {

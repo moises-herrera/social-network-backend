@@ -309,3 +309,32 @@ export const followOne = async (
 
   return response;
 };
+
+/**
+ * Unfollow a user.
+ *
+ * @param id The user id.
+ * @param followerId The follower id.
+ */
+export const unFollowOne = async (
+  id: string,
+  followerId: string
+): Promise<IStandardResponse> => {
+  const user = await User.findByIdAndUpdate(
+    id,
+    { $pull: { followers: followerId } },
+    {
+      new: true,
+    }
+  );
+
+  if (!user) {
+    throw new HttpError('Usuario no encontrado', 404);
+  }
+
+  const response: IStandardResponse = {
+    message: 'Usuario actualizado correctamente',
+  };
+
+  return response;
+};

@@ -6,6 +6,7 @@ import {
   followUser,
   getUser,
   getUsers,
+  unFollowUser,
   updateUser,
   verifyEmail,
 } from 'src/controllers/user.controller';
@@ -64,5 +65,10 @@ router.post('/:id/password', validateJwt, changePassword);
  * Follow user.
  */
 router.post('/:id/follow', validateJwt, followUser);
+
+/**
+ * Unfollow user.
+ */
+router.post('/:id/unfollow', validateJwt, unFollowUser);
 
 export { router };
