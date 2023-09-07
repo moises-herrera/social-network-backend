@@ -14,6 +14,7 @@ import {
   HttpError,
   generateToken,
 } from 'src/utils';
+import { updateImage, uploadImage } from 'src/services/upload.service';
 
 /**
  * Find all users.
@@ -129,7 +130,8 @@ export const loginUser = async (auth: IAuth): Promise<IAuthResponse> => {
  */
 export const updateOne = async (
   id: string,
-  user: IUser
+  user: IUser,
+  avatarBuffer?: Buffer
 ): Promise<IUserDocument | null> => {
   const userToUpdate = await findById(id);
 
@@ -154,6 +156,14 @@ export const updateOne = async (
   }
 
   const { password, ...fields } = user;
+
+  if (avatarBuffer) {
+    const avatarUrl = !userToUpdate.avatar
+      ? await uploadImage('users', avatarBuffer)
+      : await updateImage('users', avatarBuffer, userToUpdate.avatar as string);
+
+    fields.avatar = avatarUrl;
+  }
 
   const updatedUser = await User.findByIdAndUpdate(id, fields, {
     new: true,

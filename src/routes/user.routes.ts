@@ -40,7 +40,6 @@ router.put(
     check('lastName', 'Last name is required').not().isEmpty(),
     check('username', 'User name is required').not().isEmpty(),
     check('email', 'Email is required').isEmail(),
-    check('password', 'Password is required').not().isEmpty(),
     validateFields,
   ],
   updateUser

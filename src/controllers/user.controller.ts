@@ -51,7 +51,9 @@ export const updateUser = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const responseUser = await updateOne(id, req.body);
+
+    const avatarBuffer = req.file?.buffer;
+    const responseUser = await updateOne(id, req.body, avatarBuffer as Buffer);
 
     res.send(responseUser);
   } catch (error) {
