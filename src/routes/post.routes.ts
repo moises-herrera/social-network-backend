@@ -35,11 +35,11 @@ router.post(
   '/',
   [
     validateJwt,
+    upload.single('image'),
     check('title', 'Title is required').not().isEmpty(),
     check('topic', 'Topic is required').not().isEmpty(),
     check('description', 'Content is required').not().isEmpty(),
     validateFields,
-    upload.single('image'),
   ],
   createPost
 );
@@ -52,11 +52,11 @@ router.put(
   [
     validateJwt,
     validatePostPermissions,
+    upload.single('image'),
     check('title', 'Title is required').not().isEmpty(),
     check('topic', 'Topic is required').not().isEmpty(),
     check('description', 'Content is required').not().isEmpty(),
     validateFields,
-    upload.single('image'),
   ],
   updatePost
 );
