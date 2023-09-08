@@ -36,6 +36,8 @@ export const getPosts = async (
     if (users.length) {
       filter.user = { $in: users };
     }
+  } else if (userId) {
+    filter.user = userId;
   }
 
   const posts = await findAll(filter);
