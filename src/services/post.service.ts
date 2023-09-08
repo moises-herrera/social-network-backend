@@ -53,14 +53,20 @@ export const findById = async (id: string): Promise<IPostDocument | null> => {
 export const createOne = async (
   post: IPost,
   imageBuffer?: Buffer
-): Promise<IPostDocument> => {
+): Promise<IStandardResponse<IPost>> => {
   if (imageBuffer) {
     const imageUrl = await uploadImage('posts', imageBuffer);
     post.image = imageUrl;
   }
 
   const createdPost = await Post.create(post);
-  return createdPost;
+
+  const response: IStandardResponse<IPost> = {
+    message: 'Post creado correctamente',
+    data: createdPost,
+  };
+
+  return response;
 };
 
 /**
@@ -74,7 +80,7 @@ export const updateOne = async (
   id: string,
   post: IPost,
   imageBuffer?: Buffer
-): Promise<IPostDocument | null> => {
+): Promise<IStandardResponse<IPost>> => {
   const postToUpdate = await findById(id);
 
   if (!postToUpdate) {
@@ -102,7 +108,12 @@ export const updateOne = async (
     throw new HttpError('Post no encontrado', 404);
   }
 
-  return updatedPost;
+  const response: IStandardResponse<IPost> = {
+    message: 'Post actualizado correctamente',
+    data: updatedPost,
+  };
+
+  return response;
 };
 
 /**
