@@ -6,6 +6,7 @@ import {
 } from 'src/interfaces';
 import { Post } from 'src/models';
 import { HttpError } from 'src/utils';
+import { updateImage, uploadImage } from 'src/services/upload.service';
 
 /**
  * Find all posts.
@@ -49,7 +50,15 @@ export const findById = async (id: string): Promise<IPostDocument | null> => {
  * @param post Post data.
  * @returns The created post.
  */
-export const createOne = async (post: IPost): Promise<IPostDocument> => {
+export const createOne = async (
+  post: IPost,
+  imageBuffer?: Buffer
+): Promise<IPostDocument> => {
+  if (imageBuffer) {
+    const imageUrl = await uploadImage('posts', imageBuffer);
+    post.image = imageUrl;
+  }
+
   const createdPost = await Post.create(post);
   return createdPost;
 };
@@ -63,9 +72,29 @@ export const createOne = async (post: IPost): Promise<IPostDocument> => {
  */
 export const updateOne = async (
   id: string,
-  post: IPost
+  post: IPost,
+  imageBuffer?: Buffer
 ): Promise<IPostDocument | null> => {
-  const updatedPost = await Post.findByIdAndUpdate(id, post, {
+  const postToUpdate = await findById(id);
+
+  if (!postToUpdate) {
+    throw new HttpError('Post no encontrado', 404);
+  }
+
+  let imageUrl: string | undefined;
+
+  if (imageBuffer) {
+    imageUrl = !postToUpdate.image
+      ? await uploadImage('posts', imageBuffer)
+      : await updateImage('posts', imageBuffer, postToUpdate?.image);
+  }
+
+  const postData: IPost = {
+    ...post,
+    image: imageUrl || postToUpdate.image,
+  };
+
+  const updatedPost = await Post.findByIdAndUpdate(id, postData, {
     new: true,
   });
 

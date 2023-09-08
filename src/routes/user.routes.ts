@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
+import multer from 'multer';
 import {
   changePassword,
   deleteUser,
@@ -20,6 +21,7 @@ import {
 } from 'src/middleware';
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
 /**
  * Get all users.
@@ -44,6 +46,7 @@ router.put(
     check('username', 'User name is required').not().isEmpty(),
     check('email', 'Email is required').isEmail(),
     validateFields,
+    upload.single('avatar'),
   ],
   updateUser
 );
