@@ -341,3 +341,31 @@ export const unFollowOne = async (
 
   return response;
 };
+
+/**
+ * Get user followers.
+ * 
+ * @param id The user id. 
+ * @returns The user followers. 
+ */
+export const getFollowers = async (id: string): Promise<IUserDocument[]> => {
+  const user = await User.findById(id).populate('followers');
+
+  if (!user) {
+    throw new HttpError('Usuario no encontrado', 404);
+  }
+
+  return user.followers as IUserDocument[];
+};
+
+/**
+ * Get all the accounts that the user follows.
+ * 
+ * @param id The user id.
+ * @returns The accounts that the user follows. 
+ */
+export const getFollowing = async (id: string): Promise<IUserDocument[]> => {
+  const users = await User.find({ followers: id });
+
+  return users;
+};
