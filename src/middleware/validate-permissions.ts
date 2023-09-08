@@ -130,10 +130,7 @@ export const validatePostPermissions = async (
       throw new HttpError('Post no encontrado', 404);
     }
 
-    if (
-      user.role !== Role.Admin &&
-      currentUserId !== post.userId.toString()
-    ) {
+    if (user.role !== Role.Admin && currentUserId !== post.user.toString()) {
       throw new HttpError('No tiene permisos', 403);
     }
 
@@ -186,7 +183,7 @@ export const validateCommentPermissions = async (
       }
     }
 
-    const isOwner = post && currentUserId === post.userId.toString();
+    const isOwner = post && currentUserId === post.user.toString();
 
     if (!hasSelfPermissions && !isOwner) {
       throw new HttpError('No tiene permisos', 403);
