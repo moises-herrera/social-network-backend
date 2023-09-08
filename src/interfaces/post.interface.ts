@@ -17,7 +17,7 @@ export interface IPost {
   description: string;
 
   /** User id of the author. */
-  userId: Types.ObjectId;
+  user: Types.ObjectId;
 
   /** Comments. */
   comments: Types.ObjectId[];

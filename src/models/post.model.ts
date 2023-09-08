@@ -18,7 +18,7 @@ const PostSchema = new Schema<IPostDocument>(
       type: String,
       required: true,
     },
-    userId: {
+    user: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'users',
