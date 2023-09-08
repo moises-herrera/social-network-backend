@@ -17,11 +17,14 @@ import { handleHttpError } from 'src/utils';
 /**
  * Get all users.
  *
- * @param _req The request object.
+ * @param req The request object.
  * @param res The response object.
  */
-export const getUsers = async (_req: Request, res: Response): Promise<void> => {
-  const users = await findAll();
+export const getUsers = async (req: Request, res: Response): Promise<void> => {
+  const { username } = req.query;
+  const filter = username ? { username: { $regex: username as string } } : {};
+
+  const users = await findAll(filter);
   res.send(users);
 };
 
@@ -174,9 +177,9 @@ export const unFollowUser = async (
 
 /**
  * Get user followers.
- * 
- * @param req The request object. 
- * @param res The response object. 
+ *
+ * @param req The request object.
+ * @param res The response object.
  */
 export const getUserFollowers = async (
   req: RequestExtended,
@@ -195,9 +198,9 @@ export const getUserFollowers = async (
 
 /**
  * Get all the accounts that the user follows.
- * 
- * @param req The request object. 
- * @param res The response object. 
+ *
+ * @param req The request object.
+ * @param res The response object.
  */
 export const getUsersFollowing = async (
   req: RequestExtended,
