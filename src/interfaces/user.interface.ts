@@ -33,7 +33,7 @@ export interface IUser extends IAuth {
   posts: Types.ObjectId[];
 
   /** Followers of the user. */
-  followers: Types.ObjectId[];
+  followers: Types.ObjectId[] | IUser[];
 }
 
 /**

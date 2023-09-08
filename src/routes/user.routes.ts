@@ -5,7 +5,9 @@ import {
   deleteUser,
   followUser,
   getUser,
+  getUserFollowers,
   getUsers,
+  getUsersFollowing,
   unFollowUser,
   updateUser,
   verifyEmail,
@@ -70,5 +72,15 @@ router.post('/:id/follow', validateJwt, followUser);
  * Unfollow user.
  */
 router.post('/:id/unfollow', validateJwt, unFollowUser);
+
+/**
+ * Get user followers.
+ */
+router.get('/:id/followers', validateJwt, getUserFollowers);
+
+/**
+ * Get user following.
+ */
+router.get('/:id/following', validateJwt, getUsersFollowing);
 
 export { router };

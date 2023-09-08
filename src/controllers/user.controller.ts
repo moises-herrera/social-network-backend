@@ -6,6 +6,8 @@ import {
   findAll,
   findById,
   followOne,
+  getFollowers,
+  getFollowing,
   unFollowOne,
   updateOne,
   verifyUserEmail,
@@ -163,6 +165,48 @@ export const unFollowUser = async (
     const { id: userId } = req.params;
 
     const responseUser = await unFollowOne(userId, followerId as string);
+
+    res.send(responseUser);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Get user followers.
+ * 
+ * @param req The request object. 
+ * @param res The response object. 
+ */
+export const getUserFollowers = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const responseUser = await getFollowers(id);
+
+    res.send(responseUser);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Get all the accounts that the user follows.
+ * 
+ * @param req The request object. 
+ * @param res The response object. 
+ */
+export const getUsersFollowing = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const responseUser = await getFollowing(id);
 
     res.send(responseUser);
   } catch (error) {
