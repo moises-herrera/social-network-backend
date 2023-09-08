@@ -45,11 +45,13 @@ export const getPost = async (req: Request, res: Response): Promise<void> => {
  * @param res The response object.
  */
 export const createPost = async (
-  req: Request,
+  req: RequestExtended,
   res: Response
 ): Promise<void> => {
   try {
-    const post = await createOne(req.body);
+    const { id: userId } = req;
+    const postData = { ...req.body, userId };
+    const post = await createOne(postData);
 
     res.send(post);
   } catch (error) {
@@ -64,12 +66,14 @@ export const createPost = async (
  * @param res The response object.
  */
 export const updatePost = async (
-  req: Request,
+  req: RequestExtended,
   res: Response
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const responsePost = await updateOne(id, req.body);
+    const { id: userId } = req;
+    const postData = { ...req.body, userId };
+    const responsePost = await updateOne(id, postData);
 
     res.send(responsePost);
   } catch (error) {

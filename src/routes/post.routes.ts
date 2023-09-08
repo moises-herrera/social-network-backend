@@ -36,7 +36,6 @@ router.post(
     check('title', 'Title is required').not().isEmpty(),
     check('topic', 'Topic is required').not().isEmpty(),
     check('description', 'Content is required').not().isEmpty(),
-    check('userId', 'User id is required').not().isEmpty(),
     validateFields,
   ],
   createPost
@@ -53,7 +52,6 @@ router.put(
     check('title', 'Title is required').not().isEmpty(),
     check('topic', 'Topic is required').not().isEmpty(),
     check('description', 'Content is required').not().isEmpty(),
-    check('userId', 'User id is required').not().isEmpty(),
     validateFields,
   ],
   updatePost
