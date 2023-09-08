@@ -17,7 +17,7 @@ import { updateImage, uploadImage } from 'src/services/upload.service';
 export const findAll = async (
   filter: IStandardObject = {}
 ): Promise<IPostDocument[]> => {
-  const posts = await Post.find(filter);
+  const posts = await Post.find(filter).populate('user');
   return posts;
 };
 

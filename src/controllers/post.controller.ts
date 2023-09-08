@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { RequestExtended } from 'src/interfaces';
+import { IStandardObject, RequestExtended } from 'src/interfaces';
 import {
   createOne,
   deleteOne,
@@ -8,16 +8,37 @@ import {
   likeOne,
   updateOne,
 } from 'src/services/post.service';
+import * as userService from 'src/services/user.service';
 import { handleHttpError } from 'src/utils';
 
 /**
  * Get all posts.
  *
- * @param _req The request object.
+ * @param req The request object.
  * @param res The response object.
  */
-export const getPosts = async (_req: Request, res: Response): Promise<void> => {
-  const posts = await findAll();
+export const getPosts = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  const { id: userId } = req;
+  const { following, suggested } = req.query;
+  const filter: IStandardObject = {};
+
+  if (following) {
+    const followingUsers = await userService.getFollowing(userId as string);
+    filter.user = { $in: followingUsers };
+  } else if (suggested) {
+    const users = await userService.findAll({
+      _id: { $ne: userId },
+      sort: { followers: -1 },
+    });
+    if (users.length) {
+      filter.user = { $in: users };
+    }
+  }
+
+  const posts = await findAll(filter);
   res.send(posts);
 };
 
@@ -50,7 +71,7 @@ export const createPost = async (
 ): Promise<void> => {
   try {
     const { id: userId } = req;
-    const postData = { ...req.body, userId };
+    const postData = { ...req.body, user: userId };
     const imageBuffer = req.file?.buffer;
 
     const post = await createOne(postData, imageBuffer);
@@ -74,7 +95,7 @@ export const updatePost = async (
   try {
     const { id } = req.params;
     const { id: userId } = req;
-    const postData = { ...req.body, userId };
+    const postData = { ...req.body, user: userId };
     const imageBuffer = req.file?.buffer;
     const responsePost = await updateOne(id, postData, imageBuffer);
 

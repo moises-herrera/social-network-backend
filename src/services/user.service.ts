@@ -22,9 +22,10 @@ import { updateImage, uploadImage } from 'src/services/upload.service';
  * @returns All users.
  */
 export const findAll = async (
-  filter: IStandardObject = {}
+  filter: IStandardObject = {},
+  sort: IStandardObject = {}
 ): Promise<IUserDocument[]> => {
-  const users = await User.find(filter);
+  const users = await User.find(filter).sort(sort);
   return users;
 };
 
@@ -344,9 +345,9 @@ export const unFollowOne = async (
 
 /**
  * Get user followers.
- * 
- * @param id The user id. 
- * @returns The user followers. 
+ *
+ * @param id The user id.
+ * @returns The user followers.
  */
 export const getFollowers = async (id: string): Promise<IUserDocument[]> => {
   const user = await User.findById(id).populate('followers');
@@ -360,9 +361,9 @@ export const getFollowers = async (id: string): Promise<IUserDocument[]> => {
 
 /**
  * Get all the accounts that the user follows.
- * 
+ *
  * @param id The user id.
- * @returns The accounts that the user follows. 
+ * @returns The accounts that the user follows.
  */
 export const getFollowing = async (id: string): Promise<IUserDocument[]> => {
   const users = await User.find({ followers: id });
