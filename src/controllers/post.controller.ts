@@ -33,9 +33,7 @@ export const getPosts = async (
       _id: { $ne: userId },
       sort: { followers: -1 },
     });
-    if (users.length) {
-      filter.user = { $in: users };
-    }
+    filter.user = users.length > 0 ? { $in: users } : { $ne: userId };
   } else if (userId) {
     filter.user = userId;
   }
