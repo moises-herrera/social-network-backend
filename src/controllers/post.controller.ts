@@ -26,7 +26,9 @@ export const getPosts = async (
   const filter: IStandardObject = {};
 
   if (following) {
-    const followingUsers = await userService.getFollowing(currentUserId as string);
+    const followingUsers = await userService.getFollowing(
+      currentUserId as string
+    );
     filter.user = { $in: followingUsers };
   } else if (suggested) {
     const users = await userService.findAll({
@@ -38,7 +40,7 @@ export const getPosts = async (
     filter.user = userId;
   }
 
-  const posts = await findAll(filter);
+  const posts = await findAll(filter, 'user');
   res.send(posts);
 };
 
@@ -51,7 +53,7 @@ export const getPosts = async (
 export const getPost = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const post = await findById(id);
+    const post = await findById(id, 'user');
 
     res.send(post);
   } catch (error) {

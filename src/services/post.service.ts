@@ -12,12 +12,14 @@ import { updateImage, uploadImage } from 'src/services/upload.service';
  * Find all posts.
  *
  * @param filter The filter to apply.
+ * @param include The fields to include.
  * @returns All posts.
  */
 export const findAll = async (
-  filter: IStandardObject = {}
+  filter: IStandardObject = {},
+  include: string = ''
 ): Promise<IPostDocument[]> => {
-  const posts = await Post.find(filter).populate('user');
+  const posts = await Post.find(filter).populate(include);
   return posts;
 };
 
@@ -25,22 +27,29 @@ export const findAll = async (
  * Find a post.
  *
  * @param filter The filter to apply.
+ * @param include The fields to include.
  * @returns The post found.
  */
 export const findOne = async (
-  filter: IStandardObject
+  filter: IStandardObject,
+  include: string = ''
 ): Promise<IPostDocument | null> => {
-  const post = await Post.findOne(filter).populate('user');
+  const post = await Post.findOne(filter).populate(include);
   return post;
 };
 
 /**
  * Find a post by id.
  *
+ * @param id The post id.
+ * @param include The fields to include.
  * @returns The post found.
  */
-export const findById = async (id: string): Promise<IPostDocument | null> => {
-  const post = await findOne({ _id: id });
+export const findById = async (
+  id: string,
+  include: string = ''
+): Promise<IPostDocument | null> => {
+  const post = await findOne({ _id: id }, include);
   return post;
 };
 
