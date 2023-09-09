@@ -21,19 +21,19 @@ export const getPosts = async (
   req: RequestExtended,
   res: Response
 ): Promise<void> => {
-  const { id: userId } = req;
-  const { following, suggested } = req.query;
+  const { id: currentUserId } = req;
+  const { following, suggested, userId } = req.query;
   const filter: IStandardObject = {};
 
   if (following) {
-    const followingUsers = await userService.getFollowing(userId as string);
+    const followingUsers = await userService.getFollowing(currentUserId as string);
     filter.user = { $in: followingUsers };
   } else if (suggested) {
     const users = await userService.findAll({
-      _id: { $ne: userId },
+      _id: { $ne: currentUserId },
       sort: { followers: -1 },
     });
-    filter.user = users.length > 0 ? { $in: users } : { $ne: userId };
+    filter.user = users.length > 0 ? { $in: users } : { $ne: currentUserId };
   } else if (userId) {
     filter.user = userId;
   }
