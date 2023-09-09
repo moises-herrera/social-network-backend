@@ -22,7 +22,7 @@ export const getPosts = async (
   res: Response
 ): Promise<void> => {
   const { id: currentUserId } = req;
-  const { following, suggested, userId } = req.query;
+  const { following, suggested, userId, search } = req.query;
   const filter: IStandardObject = {};
 
   if (following) {
@@ -38,6 +38,8 @@ export const getPosts = async (
     filter.user = users.length > 0 ? { $in: users } : { $ne: currentUserId };
   } else if (userId) {
     filter.user = userId;
+  } else if (search) {
+    filter.topic = { $regex: search, $options: 'i' };
   }
 
   const posts = await findAll(filter, 'user');
