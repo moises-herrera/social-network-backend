@@ -172,11 +172,11 @@ export const validateCommentPermissions = async (
     }
 
     const hasSelfPermissions =
-      user.role === Role.Admin || currentUserId === comment.userId.toString();
+      user.role === Role.Admin || currentUserId === comment.user.toString();
     let post: IPostDocument | null = null;
 
     if (method === 'DELETE') {
-      post = await postService.findById(comment.postId.toString());
+      post = await postService.findById(comment.post.toString());
 
       if (!post) {
         throw new HttpError('Post no encontrado', 404);
