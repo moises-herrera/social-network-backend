@@ -7,12 +7,12 @@ const CommentSchema = new Schema<ICommentDocument>(
       type: String,
       required: true,
     },
-    userId: {
+    user: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'users',
     },
-    postId: {
+    post: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'posts',

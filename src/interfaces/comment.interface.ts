@@ -7,11 +7,11 @@ export interface IComment {
   /** Comment content. */
   content: string;
 
-  /** User id. */
-  userId: Types.ObjectId;
+  /** User that created the comment. */
+  user: Types.ObjectId;
 
-  /** Post id. */
-  postId: Types.ObjectId;
+  /** Post where the comment was created. */
+  post: Types.ObjectId;
 }
 
 /**

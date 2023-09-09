@@ -30,7 +30,7 @@ export const findAll = async (
 export const findOne = async (
   filter: IStandardObject
 ): Promise<IPostDocument | null> => {
-  const post = await Post.findOne(filter);
+  const post = await Post.findOne(filter).populate('user');
   return post;
 };
 

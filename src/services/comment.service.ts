@@ -16,7 +16,7 @@ import { HttpError } from 'src/utils';
 export const findAll = async (
   filter: IStandardObject = {}
 ): Promise<ICommentDocument[]> => {
-  const comments = await Comment.find(filter);
+  const comments = await Comment.find(filter).populate('user');
   return comments;
 };
 

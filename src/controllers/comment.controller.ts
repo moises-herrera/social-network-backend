@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { RequestExtended } from 'src/interfaces';
+import { IStandardObject, RequestExtended } from 'src/interfaces';
 import {
   createOne,
   deleteOne,
@@ -12,14 +12,21 @@ import { handleHttpError } from 'src/utils';
 /**
  * Get all comments.
  *
- * @param _req The request object.
+ * @param req The request object.
  * @param res The response object.
  */
 export const getComments = async (
-  _req: Request,
+  req: Request,
   res: Response
 ): Promise<void> => {
-  const comments = await findAll();
+  const { postId } = req.query;
+  const filter: IStandardObject = {};
+
+  if (postId) {
+    filter.postId = postId;
+  }
+
+  const comments = await findAll(filter);
   res.send(comments);
 };
 
