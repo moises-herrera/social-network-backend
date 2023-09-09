@@ -23,7 +23,7 @@ export const getComments = async (
   const filter: IStandardObject = {};
 
   if (postId) {
-    filter.postId = postId;
+    filter.post = postId;
   }
 
   const comments = await findAll(filter);

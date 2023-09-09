@@ -16,7 +16,10 @@ import { HttpError } from 'src/utils';
 export const findAll = async (
   filter: IStandardObject = {}
 ): Promise<ICommentDocument[]> => {
-  const comments = await Comment.find(filter).populate('user');
+  const comments = await Comment.find(filter).populate(
+    'user',
+    'firstName lastName username avatar'
+  );
   return comments;
 };
 
@@ -29,7 +32,10 @@ export const findAll = async (
 export const findOne = async (
   filter: IStandardObject
 ): Promise<ICommentDocument | null> => {
-  const comment = await Comment.findOne(filter);
+  const comment = await Comment.findOne(filter).populate(
+    'user',
+    'firstName lastName username avatar'
+  );
   return comment;
 };
 
