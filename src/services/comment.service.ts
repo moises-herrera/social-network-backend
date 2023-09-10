@@ -4,8 +4,9 @@ import {
   IStandardObject,
   IStandardResponse,
 } from 'src/interfaces';
-import { Comment } from 'src/models';
+import { Comment, Post } from 'src/models';
 import { HttpError } from 'src/utils';
+import * as postService from 'src/services/post.service';
 
 /**
  * Find all comments.
@@ -60,11 +61,19 @@ export const findById = async (
 export const createOne = async (
   comment: IComment
 ): Promise<ICommentDocument> => {
-  const createdComment = (await Comment.create(comment)).populate(
-    'user',
-    'firstName lastName username avatar'
-  );
-  return createdComment;
+  const post = await postService.findById(comment.post.toString());
+
+  if (!post) {
+    throw new HttpError('Post no encontrado', 404);
+  }
+
+  const createdComment = await Comment.create(comment);
+
+  await Post.findByIdAndUpdate(comment.post, {
+    $push: { comments: createdComment._id },
+  });
+
+  return createdComment.populate('user', 'firstName lastName username avatar');
 };
 
 /**
@@ -101,6 +110,10 @@ export const deleteOne = async (id: string): Promise<IStandardResponse> => {
   if (!deletedComment) {
     throw new HttpError('Comentario no encontrado', 404);
   }
+
+  await Post.findByIdAndUpdate(deletedComment.post, {
+    $pull: { comments: deletedComment._id },
+  });
 
   const response: IStandardResponse = {
     message: 'Comentario eliminado correctamente',
