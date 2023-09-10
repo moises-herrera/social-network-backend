@@ -7,6 +7,7 @@ import {
   getPost,
   getPosts,
   likePost,
+  unlikePost,
   updatePost,
 } from 'src/controllers/post.controller';
 import {
@@ -70,5 +71,10 @@ router.delete('/:id', [validateJwt, validatePostPermissions], deletePost);
  * Like a post.
  */
 router.post('/:id/like', validateJwt, likePost);
+
+/**
+ * Remove like from a post.
+ */
+router.post('/:id/unlike', validateJwt, unlikePost);
 
 export { router };

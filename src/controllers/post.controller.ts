@@ -6,6 +6,7 @@ import {
   findAll,
   findById,
   likeOne,
+  removeLikeOne,
   updateOne,
 } from 'src/services/post.service';
 import * as userService from 'src/services/user.service';
@@ -145,6 +146,28 @@ export const likePost = async (
     const { id: postId } = req.params;
 
     const responsePost = await likeOne(postId, userId as string);
+
+    res.send(responsePost);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Unlike a post.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ */
+export const unlikePost = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id: userId } = req;
+    const { id: postId } = req.params;
+
+    const responsePost = await removeLikeOne(postId, userId as string);
 
     res.send(responsePost);
   } catch (error) {
