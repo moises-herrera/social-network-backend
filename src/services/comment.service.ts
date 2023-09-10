@@ -60,7 +60,10 @@ export const findById = async (
 export const createOne = async (
   comment: IComment
 ): Promise<ICommentDocument> => {
-  const createdComment = await Comment.create(comment);
+  const createdComment = (await Comment.create(comment)).populate(
+    'user',
+    'firstName lastName username avatar'
+  );
   return createdComment;
 };
 
