@@ -175,3 +175,34 @@ export const likeOne = async (
 
   return response;
 };
+
+/**
+ * Remove like from a post.
+ *
+ * @param id The post id.
+ * @param userId The user id.
+ */
+export const removeLikeOne = async (
+  id: string,
+  userId: string
+): Promise<IStandardResponse> => {
+  const updatedPost = await Post.findByIdAndUpdate(
+    id,
+    {
+      $pull: { likes: userId },
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!updatedPost) {
+    throw new HttpError('Post no encontrado', 404);
+  }
+
+  const response: IStandardResponse = {
+    message: 'Post actualizado correctamente',
+  };
+
+  return response;
+};
