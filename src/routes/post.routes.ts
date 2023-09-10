@@ -69,6 +69,6 @@ router.delete('/:id', [validateJwt, validatePostPermissions], deletePost);
 /**
  * Like a post.
  */
-router.post('/:id', validateJwt, likePost);
+router.post('/:id/like', validateJwt, likePost);
 
 export { router };

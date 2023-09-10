@@ -158,9 +158,7 @@ export const likeOne = async (
   const updatedPost = await Post.findByIdAndUpdate(
     id,
     {
-      likes: {
-        $push: userId,
-      },
+      $push: { likes: userId },
     },
     {
       new: true,
