@@ -67,7 +67,6 @@ export const findOne = async (
   const user = await User.findOne(filter);
 
   if (users.length > 0 && user && user.username === users[0].username) {
-    console.log('user');
     user.isAccountVerified = true;
   }
 
