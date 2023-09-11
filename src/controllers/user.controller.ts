@@ -187,8 +187,7 @@ export const getUserFollowers = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-
-    const responseUser = await getFollowers(id);
+    const responseUser = await getFollowers(id, req.query);
 
     res.send(responseUser);
   } catch (error) {
@@ -208,8 +207,7 @@ export const getUsersFollowing = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-
-    const responseUser = await getFollowing(id);
+    const responseUser = await getFollowing(id, req.query);
 
     res.send(responseUser);
   } catch (error) {

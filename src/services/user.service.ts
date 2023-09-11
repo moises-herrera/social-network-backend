@@ -349,14 +349,27 @@ export const unFollowOne = async (
  * @param id The user id.
  * @returns The user followers.
  */
-export const getFollowers = async (id: string): Promise<IUserDocument[]> => {
+export const getFollowers = async (
+  id: string,
+  filter: IStandardObject = {}
+): Promise<IUserDocument[]> => {
   const user = await User.findById(id).populate('followers');
 
   if (!user) {
     throw new HttpError('Usuario no encontrado', 404);
   }
 
-  return user.followers as IUserDocument[];
+  let followers = user.followers as IUserDocument[];
+
+  if (filter.username) {
+    followers = followers.filter((user) => {
+      const { username } = filter;
+      const regex = new RegExp(username as string, 'i');
+      return regex.test(user.username);
+    });
+  }
+
+  return followers;
 };
 
 /**
@@ -365,8 +378,19 @@ export const getFollowers = async (id: string): Promise<IUserDocument[]> => {
  * @param id The user id.
  * @returns The accounts that the user follows.
  */
-export const getFollowing = async (id: string): Promise<IUserDocument[]> => {
-  const users = await User.find({ followers: id });
+export const getFollowing = async (
+  id: string,
+  filter: IStandardObject = {}
+): Promise<IUserDocument[]> => {
+  let users = await User.find({ followers: id });
+
+  if (filter.username) {
+    users = users.filter((user) => {
+      const { username } = filter;
+      const regex = new RegExp(username as string, 'i');
+      return regex.test(user.username);
+    });
+  }
 
   return users;
 };
