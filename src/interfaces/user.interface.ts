@@ -29,6 +29,9 @@ export interface IUser extends IAuth {
   /** If the email is verified. */
   isEmailVerified: boolean;
 
+  /** If the account is verified. */
+  isAccountVerified: boolean;
+
   /** Posts of the user. */
   posts: Types.ObjectId[];
 
