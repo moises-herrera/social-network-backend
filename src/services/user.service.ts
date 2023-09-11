@@ -56,6 +56,12 @@ export const findOne = async (
 ): Promise<IUserDocument | null> => {
   const users = await User.aggregate([
     {
+      $project: {
+        username: 1,
+        followers: 1,
+      },
+    },
+    {
       $addFields: {
         followersCount: { $size: '$followers' },
       },
