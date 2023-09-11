@@ -34,7 +34,6 @@ export const getPosts = async (
   } else if (suggested) {
     const users = await userService.findAll({
       _id: { $ne: currentUserId },
-      sort: { followers: -1 },
     });
     filter.user = users.length > 0 ? { $in: users } : { $ne: currentUserId };
   } else if (userId) {

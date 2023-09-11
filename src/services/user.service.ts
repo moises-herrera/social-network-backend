@@ -22,10 +22,24 @@ import { updateImage, uploadImage } from 'src/services/upload.service';
  * @returns All users.
  */
 export const findAll = async (
-  filter: IStandardObject = {},
-  sort: IStandardObject = {}
+  filter: IStandardObject = {}
 ): Promise<IUserDocument[]> => {
-  const users = await User.find(filter).sort(sort);
+  const users = await User.aggregate([
+    {
+      $match: filter,
+    },
+    {
+      $addFields: {
+        followersCount: { $size: '$followers' },
+      },
+    },
+    {
+      $sort: { followersCount: -1 },
+    },
+  ]);
+
+  users[0].isAccountVerified = true;
+
   return users;
 };
 
