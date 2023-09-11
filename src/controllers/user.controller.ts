@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { isValidObjectId } from 'mongoose';
+import { isObjectIdOrHexString } from 'mongoose';
 import { RequestExtended } from 'src/interfaces';
 import {
   changeUserPassword,
@@ -39,7 +39,7 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
 export const getUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const isObjectId = isValidObjectId(id);
+    const isObjectId = isObjectIdOrHexString(id);
     const user = isObjectId
       ? await findById(id)
       : await findOne({ username: id });
