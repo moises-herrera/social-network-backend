@@ -38,7 +38,9 @@ export const findAll = async (
     },
   ]);
 
-  users[0].isAccountVerified = true;
+  if (users.length > 0) {
+    users[0].isAccountVerified = true;
+  }
 
   return users;
 };
@@ -52,7 +54,23 @@ export const findAll = async (
 export const findOne = async (
   filter: IStandardObject
 ): Promise<IUserDocument | null> => {
+  const users = await User.aggregate([
+    {
+      $addFields: {
+        followersCount: { $size: '$followers' },
+      },
+    },
+    {
+      $sort: { followersCount: -1 },
+    },
+  ]);
   const user = await User.findOne(filter);
+
+  if (users.length > 0 && user && user.username === users[0].username) {
+    console.log('user');
+    user.isAccountVerified = true;
+  }
+
   return user;
 };
 

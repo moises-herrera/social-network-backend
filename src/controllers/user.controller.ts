@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
+import { isValidObjectId } from 'mongoose';
 import { RequestExtended } from 'src/interfaces';
 import {
   changeUserPassword,
   deleteOne,
   findAll,
   findById,
+  findOne,
   followOne,
   getFollowers,
   getFollowing,
@@ -37,7 +39,10 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
 export const getUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const user = await findById(id);
+    const isObjectId = isValidObjectId(id);
+    const user = isObjectId
+      ? await findById(id)
+      : await findOne({ username: id });
 
     res.send(user);
   } catch (error) {
