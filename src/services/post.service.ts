@@ -19,7 +19,9 @@ export const findAll = async (
   filter: IStandardObject = {},
   include: string = ''
 ): Promise<IPostDocument[]> => {
-  const posts = await Post.find(filter).populate(include);
+  const posts = await Post.find(filter)
+    .populate(include)
+    .sort({ createdAt: -1 });
   return posts;
 };
 
