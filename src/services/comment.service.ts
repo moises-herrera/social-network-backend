@@ -19,7 +19,7 @@ export const findAll = async (
 ): Promise<ICommentDocument[]> => {
   const comments = await Comment.find(filter).populate(
     'user',
-    'firstName lastName username avatar'
+    'firstName lastName username avatar isAccountVerified'
   );
   return comments;
 };
@@ -35,7 +35,7 @@ export const findOne = async (
 ): Promise<ICommentDocument | null> => {
   const comment = await Comment.findOne(filter).populate(
     'user',
-    'firstName lastName username avatar'
+    'firstName lastName username avatar isAccountVerified'
   );
   return comment;
 };
@@ -73,7 +73,10 @@ export const createOne = async (
     $push: { comments: createdComment._id },
   });
 
-  return createdComment.populate('user', 'firstName lastName username avatar');
+  return createdComment.populate(
+    'user',
+    'firstName lastName username avatar isAccountVerified'
+  );
 };
 
 /**
