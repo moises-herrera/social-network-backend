@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts",
     "build": "rimraf ./dist && tsc && tsc-alias",
+    "post-build": "cp src/email-templates/ dist/email-templates/ -r",
     "start": "node ./dist/index.js"
   },
   "keywords": [],
