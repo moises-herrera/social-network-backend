@@ -3,10 +3,12 @@ import {
   ICommentDocument,
   IStandardObject,
   IStandardResponse,
+  IUser,
 } from 'src/interfaces';
 import { Comment, Post } from 'src/models';
 import { HttpError } from 'src/utils';
 import * as postService from 'src/services/post.service';
+import { getUserWithMostFollowers } from 'src/services/user.service';
 
 /**
  * Find all comments.
@@ -17,10 +19,17 @@ import * as postService from 'src/services/post.service';
 export const findAll = async (
   filter: IStandardObject = {}
 ): Promise<ICommentDocument[]> => {
-  const comments = await Comment.find(filter).populate(
-    'user',
-    'firstName lastName username avatar isAccountVerified'
-  );
+  const comments = await Comment.find(filter);
+  const userWithMostFollowers = await getUserWithMostFollowers();
+
+  if (userWithMostFollowers && comments.length) {
+    comments.forEach((comment) => {
+      const commentUser = comment.user as unknown as IUser;
+      commentUser.isAccountVerified =
+        commentUser.username === userWithMostFollowers.username;
+    });
+  }
+
   return comments;
 };
 
@@ -33,10 +42,15 @@ export const findAll = async (
 export const findOne = async (
   filter: IStandardObject
 ): Promise<ICommentDocument | null> => {
-  const comment = await Comment.findOne(filter).populate(
-    'user',
-    'firstName lastName username avatar isAccountVerified'
-  );
+  const comment = await Comment.findOne(filter);
+  const userWithMostFollowers = await getUserWithMostFollowers();
+
+  if (userWithMostFollowers && comment && comment.user) {
+    const commentUser = comment.user as unknown as IUser;
+    commentUser.isAccountVerified =
+      commentUser.username === userWithMostFollowers.username;
+  }
+
   return comment;
 };
 

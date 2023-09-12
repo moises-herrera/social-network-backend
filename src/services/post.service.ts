@@ -3,10 +3,12 @@ import {
   IPostDocument,
   IStandardObject,
   IStandardResponse,
+  IUser,
 } from 'src/interfaces';
 import { Post } from 'src/models';
 import { HttpError } from 'src/utils';
 import { updateImage, uploadImage } from 'src/services/upload.service';
+import { getUserWithMostFollowers } from 'src/services/user.service';
 
 /**
  * Find all posts.
@@ -22,6 +24,17 @@ export const findAll = async (
   const posts = await Post.find(filter)
     .populate(include)
     .sort({ createdAt: -1 });
+
+  const userWithMostFollowers = await getUserWithMostFollowers();
+
+  if (userWithMostFollowers && posts.length) {
+    posts.forEach((post) => {
+      const postUser = post.user as unknown as IUser;
+      postUser.isAccountVerified =
+        postUser.username === userWithMostFollowers.username;
+    });
+  }
+
   return posts;
 };
 
@@ -37,6 +50,7 @@ export const findOne = async (
   include: string = ''
 ): Promise<IPostDocument | null> => {
   const post = await Post.findOne(filter).populate(include);
+
   return post;
 };
 

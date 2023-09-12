@@ -54,6 +54,34 @@ export const findAll = async (
 export const findOne = async (
   filter: IStandardObject
 ): Promise<IUserDocument | null> => {
+  const userWithMostFollowers = await getUserWithMostFollowers();
+  const user = await User.findOne(filter);
+
+  if (userWithMostFollowers && user) {
+    user.isAccountVerified = user.username === userWithMostFollowers.username;
+  }
+
+  return user;
+};
+
+/**
+ * Find a user by id.
+ *
+ * @returns The user found.
+ */
+export const findById = async (id: string): Promise<IUserDocument | null> => {
+  const user = await findOne({ _id: id });
+  return user;
+};
+
+/**
+ * Get the user with most followers.
+ *
+ * @returns The user with most followers.
+ */
+export const getUserWithMostFollowers = async (): Promise<
+  IUserDocument | undefined
+> => {
   const users = await User.aggregate([
     {
       $project: {
@@ -70,23 +98,8 @@ export const findOne = async (
       $sort: { followersCount: -1 },
     },
   ]);
-  const user = await User.findOne(filter);
 
-  if (users.length > 0 && user && user.username === users[0].username) {
-    user.isAccountVerified = true;
-  }
-
-  return user;
-};
-
-/**
- * Find a user by id.
- *
- * @returns The user found.
- */
-export const findById = async (id: string): Promise<IUserDocument | null> => {
-  const user = await findOne({ _id: id });
-  return user;
+  return users[0];
 };
 
 /**
