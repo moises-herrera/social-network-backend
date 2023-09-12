@@ -3,8 +3,8 @@ import { IStandardObject, RequestExtended } from 'src/interfaces';
 import {
   createOne,
   deleteOne,
-  findAll,
-  findById,
+  findAllWithUser,
+  findWithUser,
   updateOne,
 } from 'src/services/comment.service';
 import { handleHttpError } from 'src/utils';
@@ -26,7 +26,7 @@ export const getComments = async (
     filter.post = postId;
   }
 
-  const comments = await findAll(filter);
+  const comments = await findAllWithUser(filter);
   res.send(comments);
 };
 
@@ -42,7 +42,9 @@ export const getComment = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const comment = await findById(id);
+    const comment = await findWithUser({
+      _id: id,
+    });
 
     res.send(comment);
   } catch (error) {

@@ -20,6 +20,35 @@ export const findAll = async (
   filter: IStandardObject = {}
 ): Promise<ICommentDocument[]> => {
   const comments = await Comment.find(filter);
+  return comments;
+};
+
+/**
+ * Find a comment.
+ *
+ * @param filter The filter to apply.
+ * @returns All comments.
+ */
+export const findOne = async (
+  filter: IStandardObject = {}
+): Promise<ICommentDocument | null> => {
+  const comment = await Comment.findOne(filter);
+  return comment;
+};
+
+/**
+ * Find all comments with user.
+ *
+ * @param filter The filter to apply.
+ * @returns All comments.
+ */
+export const findAllWithUser = async (
+  filter: IStandardObject = {}
+): Promise<ICommentDocument[]> => {
+  const comments = await Comment.find(filter).populate(
+    'user',
+    'firstName lastName username avatar isAccountVerified'
+  );
   const userWithMostFollowers = await getUserWithMostFollowers();
 
   if (userWithMostFollowers && comments.length) {
@@ -34,15 +63,18 @@ export const findAll = async (
 };
 
 /**
- * Find an comment.
+ * Find a comment with user.
  *
  * @param filter The filter to apply.
  * @returns The comment found.
  */
-export const findOne = async (
+export const findWithUser = async (
   filter: IStandardObject
 ): Promise<ICommentDocument | null> => {
-  const comment = await Comment.findOne(filter);
+  const comment = await Comment.findOne(filter).populate(
+    'user',
+    'firstName lastName username avatar isAccountVerified'
+  );
   const userWithMostFollowers = await getUserWithMostFollowers();
 
   if (userWithMostFollowers && comment && comment.user) {
@@ -55,7 +87,7 @@ export const findOne = async (
 };
 
 /**
- * Find an comment by id.
+ * Find a comment by id.
  *
  * @returns The comment found.
  */
