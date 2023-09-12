@@ -32,6 +32,9 @@ export interface IUser extends IAuth {
   /** If the account is verified. */
   isAccountVerified: boolean;
 
+  /** If the user is founder. */
+  isFounder: boolean;
+
   /** Posts of the user. */
   posts: Types.ObjectId[];
 

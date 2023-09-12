@@ -44,6 +44,10 @@ const UserSchema = new Schema<IUserDocument>(
       type: Boolean,
       default: false,
     },
+    isFounder: {
+      type: Boolean,
+      default: false,
+    },
     posts: [
       {
         type: Schema.Types.ObjectId,
