@@ -27,6 +27,28 @@ CommentSchema.statics.buildComment = (comment: IComment) => {
   return new Comment(comment);
 };
 
+CommentSchema.pre<ICommentDocument[]>('find', function (next) {
+  const comments = this;
+
+  (comments as any).populate(
+    'user',
+    'firstName lastName username avatar isAccountVerified'
+  );
+
+  next();
+});
+
+CommentSchema.pre<ICommentDocument>('findOne', function (next) {
+  const comment = this;
+
+  (comment as any).populate(
+    'user',
+    'firstName lastName username avatar isAccountVerified'
+  );
+
+  next();
+});
+
 const Comment = model<ICommentDocument, ICommentModel>(
   'comments',
   CommentSchema
