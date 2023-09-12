@@ -47,7 +47,7 @@ export const findAllWithUser = async (
 ): Promise<ICommentDocument[]> => {
   const comments = await Comment.find(filter).populate(
     'user',
-    'firstName lastName username avatar isAccountVerified'
+    'firstName lastName username avatar isAccountVerified isFounder'
   );
   const userWithMostFollowers = await getUserWithMostFollowers();
 
@@ -73,7 +73,7 @@ export const findWithUser = async (
 ): Promise<ICommentDocument | null> => {
   const comment = await Comment.findOne(filter).populate(
     'user',
-    'firstName lastName username avatar isAccountVerified'
+    'firstName lastName username avatar isAccountVerified isFounder'
   );
   const userWithMostFollowers = await getUserWithMostFollowers();
 
