@@ -75,6 +75,29 @@ export const findById = async (id: string): Promise<IUserDocument | null> => {
 };
 
 /**
+ * Get the ids of the users suggested.
+ * 
+ * @param filter The filter to apply.
+ * @returns The ids of the users suggested. 
+ */
+export const getUsersSuggested = async (
+  filter: IStandardObject
+): Promise<string[]> => {
+  const users = await User.aggregate([
+    {
+      $match: filter,
+    },
+    {
+      $project: {
+        _id: 1,
+      },
+    },
+  ]);
+
+  return users;
+};
+
+/**
  * Get the user with most followers.
  *
  * @returns The user with most followers.

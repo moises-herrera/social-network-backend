@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 import { IStandardObject, RequestExtended } from 'src/interfaces';
 import {
   createOne,
@@ -32,8 +33,8 @@ export const getPosts = async (
     );
     filter.user = { $in: followingUsers };
   } else if (suggested) {
-    const users = await userService.findAll({
-      _id: { $ne: currentUserId },
+    const users = await userService.getUsersSuggested({
+      _id: { $ne: new Types.ObjectId(currentUserId) },
     });
     filter.user = users.length > 0 ? { $in: users } : { $ne: currentUserId };
   } else if (userId) {
