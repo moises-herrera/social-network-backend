@@ -1,6 +1,6 @@
 /**
  * Standard object interface.
  */
-export interface StandardObject {
+export interface IStandardObject {
   [key: string]: any;
 }

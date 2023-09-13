@@ -1,7 +1,7 @@
 /**
  * Represents the authentication credentials.
  */
-export interface Auth {
+export interface IAuth {
   /** Email address. */
   email: string;
 

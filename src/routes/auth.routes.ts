@@ -5,8 +5,7 @@ import {
   register,
   validateToken,
 } from 'src/controllers/auth.controller';
-import { validateFields } from 'src/middleware';
-import { validateJwt } from 'src/middleware/validate-jwt';
+import { validateFields, validateJwt } from 'src/middleware';
 
 const router = Router();
 
@@ -18,6 +17,7 @@ router.post(
   [
     check('firstName', 'First name is required').not().isEmpty(),
     check('lastName', 'Last name is required').not().isEmpty(),
+    check('username', 'User name is required').not().isEmpty(),
     check('email', 'Email is required').isEmail(),
     check('password', 'Password is required').not().isEmpty(),
     validateFields,
