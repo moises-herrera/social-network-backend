@@ -22,8 +22,13 @@ import { updateImage, uploadImage } from 'src/services/upload.service';
  * @returns All users.
  */
 export const findAll = async (
-  filter: IStandardObject = {}
+  filter: IStandardObject = {},
+  limit = 10,
+  page = 1
 ): Promise<IUserDocument[]> => {
+  const userWithMostFollowers = await getUserWithMostFollowers();
+  const skipRecords = (page - 1) * limit;
+
   const users = await User.aggregate([
     {
       $match: filter,
@@ -36,10 +41,17 @@ export const findAll = async (
     {
       $sort: { followersCount: -1 },
     },
+    {
+      $skip: skipRecords > 0 ? skipRecords : 0,
+    },
+    {
+      $limit: limit,
+    },
   ]);
 
-  if (users.length > 0) {
-    users[0].isAccountVerified = true;
+  if (users.length > 0 && userWithMostFollowers) {
+    users[0].isAccountVerified =
+      users[0].username === userWithMostFollowers.username;
   }
 
   return users;
@@ -76,9 +88,9 @@ export const findById = async (id: string): Promise<IUserDocument | null> => {
 
 /**
  * Get the ids of the users suggested.
- * 
+ *
  * @param filter The filter to apply.
- * @returns The ids of the users suggested. 
+ * @returns The ids of the users suggested.
  */
 export const getUsersSuggested = async (
   filter: IStandardObject

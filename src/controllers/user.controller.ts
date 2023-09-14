@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { isObjectIdOrHexString } from 'mongoose';
-import { RequestExtended } from 'src/interfaces';
+import { Types, isObjectIdOrHexString } from 'mongoose';
+import { IStandardObject, RequestExtended } from 'src/interfaces';
 import {
   changeUserPassword,
   deleteOne,
@@ -22,11 +22,22 @@ import { handleHttpError } from 'src/utils';
  * @param req The request object.
  * @param res The response object.
  */
-export const getUsers = async (req: Request, res: Response): Promise<void> => {
-  const { username } = req.query;
-  const filter = username ? { username: { $regex: username as string } } : {};
+export const getUsers = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  const { username, excludeCurrentUser, limit, page } = req.query;
+  const filter: IStandardObject = {};
 
-  const users = await findAll(filter);
+  if (username) {
+    filter.username = { $regex: username as string, $options: 'i' };
+  }
+
+  if (excludeCurrentUser) {
+    filter._id = { $ne: new Types.ObjectId(req.id) };
+  }
+
+  const users = await findAll(filter, Number(limit), Number(page));
   res.send(users);
 };
 
