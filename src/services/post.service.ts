@@ -4,6 +4,8 @@ import {
   IStandardObject,
   IStandardResponse,
   IUser,
+  PaginationOptions,
+  SelectOptions,
 } from 'src/interfaces';
 import { Post } from 'src/models';
 import { HttpError } from 'src/utils';
@@ -19,10 +21,17 @@ import { getUserWithMostFollowers } from 'src/services/user.service';
  */
 export const findAll = async (
   filter: IStandardObject = {},
-  include: string = ''
+  selectOptions?: SelectOptions,
+  paginationOptions?: PaginationOptions
 ): Promise<IPostDocument[]> => {
+  const { include = '', select = '' } = selectOptions || {};
+  const { limit = 10, page = 1 } = paginationOptions || {};
+  const skipRecords = (page - 1) * limit;
+
   const posts = await Post.find(filter)
-    .populate(include)
+    .limit(limit * 1)
+    .skip(skipRecords)
+    .populate(include, select)
     .sort({ createdAt: -1 });
 
   const userWithMostFollowers = await getUserWithMostFollowers();

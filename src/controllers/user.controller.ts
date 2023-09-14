@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import { Types, isObjectIdOrHexString } from 'mongoose';
-import { IStandardObject, RequestExtended } from 'src/interfaces';
+import {
+  IStandardObject,
+  PaginationOptions,
+  RequestExtended,
+} from 'src/interfaces';
 import {
   changeUserPassword,
   deleteOne,
@@ -37,7 +41,12 @@ export const getUsers = async (
     filter._id = { $ne: new Types.ObjectId(req.id) };
   }
 
-  const users = await findAll(filter, Number(limit), Number(page));
+  const paginationOptions: PaginationOptions = {
+    limit: Number(limit) || 10,
+    page: Number(page) || 1,
+  };
+
+  const users = await findAll(filter, paginationOptions);
   res.send(users);
 };
 

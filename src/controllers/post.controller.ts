@@ -1,6 +1,11 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { IStandardObject, RequestExtended } from 'src/interfaces';
+import {
+  IStandardObject,
+  PaginationOptions,
+  RequestExtended,
+  SelectOptions,
+} from 'src/interfaces';
 import {
   createOne,
   deleteOne,
@@ -24,7 +29,7 @@ export const getPosts = async (
   res: Response
 ): Promise<void> => {
   const { id: currentUserId } = req;
-  const { following, suggested, userId, search } = req.query;
+  const { following, suggested, userId, search, limit, page } = req.query;
   const filter: IStandardObject = {};
 
   if (following) {
@@ -44,7 +49,17 @@ export const getPosts = async (
     filter.user = { $ne: currentUserId };
   }
 
-  const posts = await findAll(filter, 'user');
+  const selectOptions: SelectOptions = {
+    include: 'user',
+    select: 'username avatar followers isAccountVerified isFounder',
+  };
+
+  const paginationOptions: PaginationOptions = {
+    limit: Number(limit) || 10,
+    page: Number(page) || 1,
+  };
+
+  const posts = await findAll(filter, selectOptions, paginationOptions);
   res.send(posts);
 };
 

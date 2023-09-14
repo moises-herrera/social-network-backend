@@ -6,6 +6,7 @@ import {
   IUser,
   IUserDocument,
   IStandardResponse,
+  PaginationOptions,
 } from 'src/interfaces';
 import { User } from 'src/models';
 import {
@@ -23,10 +24,10 @@ import { updateImage, uploadImage } from 'src/services/upload.service';
  */
 export const findAll = async (
   filter: IStandardObject = {},
-  limit = 10,
-  page = 1
+  paginationOptions?: PaginationOptions
 ): Promise<IUserDocument[]> => {
   const userWithMostFollowers = await getUserWithMostFollowers();
+  const { limit = 10, page = 1 } = paginationOptions || {};
   const skipRecords = (page - 1) * limit;
 
   const users = await User.aggregate([
