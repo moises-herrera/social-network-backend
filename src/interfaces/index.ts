@@ -12,3 +12,4 @@ export * from './like.interface';
 export * from './standard-response.interface';
 export * from './pagination-options.interface';
 export * from './select-options.interface';
+export * from './paginated-response.interface';
