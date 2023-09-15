@@ -587,5 +587,5 @@ export const getFollowingIds = async (id: string): Promise<ObjectId[]> => {
     },
   ]);
 
-  return usersIds;
+  return usersIds.map((user) => user._id);
 };

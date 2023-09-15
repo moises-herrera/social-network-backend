@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 import {
   IStandardObject,
   PaginationOptions,
@@ -37,12 +38,12 @@ export const getPosts = async (
     );
     filter.user = { $in: followingUsers };
   } else if (suggested) {
-    filter.user = { $ne: currentUserId };
+    filter.user = { $ne: new Types.ObjectId(currentUserId as string) };
   } else if (userId) {
-    filter.user = userId;
-  } else if (search) {
+    filter.user = new Types.ObjectId(userId as string);
+  } else if (typeof search === 'string') {
+    filter.user = { $ne: new Types.ObjectId(currentUserId as string) };
     filter.topic = { $regex: search, $options: 'i' };
-    filter.user = { $ne: currentUserId };
   }
 
   const selectOptions: SelectOptions = {
