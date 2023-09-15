@@ -10,4 +10,7 @@ export interface PaginatedResponse<T> {
 
   /** Current page. */
   page: number;
+
+  /** Total results filtered. */
+  resultsCount: number;
 }

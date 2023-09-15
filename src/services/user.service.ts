@@ -33,7 +33,10 @@ export const findAll = async (
 
   const usersCount = await User.countDocuments();
 
-  const users = await User.aggregate([
+  const usersResult = await User.aggregate<{
+    users: IUserDocument[];
+    resultsCount: [{ count: number }];
+  }>([
     {
       $match: filter,
     },
@@ -46,12 +49,25 @@ export const findAll = async (
       $sort: { followersCount: -1 },
     },
     {
-      $skip: skipRecords > 0 ? skipRecords : 0,
-    },
-    {
-      $limit: limit,
+      $facet: {
+        users: [
+          {
+            $skip: skipRecords > 0 ? skipRecords : 0,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+        resultsCount: [
+          {
+            $count: 'count',
+          },
+        ],
+      },
     },
   ]);
+
+  const { users, resultsCount } = usersResult[0];
 
   if (users.length > 0 && userWithMostFollowers) {
     users[0].isAccountVerified =
@@ -62,6 +78,7 @@ export const findAll = async (
     data: users,
     total: usersCount,
     page,
+    resultsCount: resultsCount[0]?.count || 0,
   };
 
   return response;

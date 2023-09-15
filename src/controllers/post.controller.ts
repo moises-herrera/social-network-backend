@@ -45,7 +45,7 @@ export const getPosts = async (
   } else if (userId) {
     filter.user = userId;
   } else if (search) {
-    if (search !== 'all') filter.topic = { $regex: search, $options: 'i' };
+    filter.topic = { $regex: search, $options: 'i' };
     filter.user = { $ne: currentUserId };
   }
 
