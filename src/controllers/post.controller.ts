@@ -48,7 +48,8 @@ export const getPosts = async (
 
   const selectOptions: SelectOptions = {
     include: 'user',
-    select: 'username avatar followers isAccountVerified isFounder',
+    select:
+      'firstName lastName username avatar followers isAccountVerified isFounder',
   };
 
   const paginationOptions: PaginationOptions = {
