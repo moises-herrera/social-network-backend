@@ -522,6 +522,10 @@ export const getFollowing = async (
   const { limit = 10, page = 1 } = paginationOptions || {};
   const skipRecords = (page - 1) * limit;
 
+  const followingCount = await User.countDocuments({
+    followers: new Types.ObjectId(id),
+  });
+
   const usersResult = await User.aggregate<{
     following: IUserDocument[];
     resultsCount: [{ count: number }];
@@ -555,7 +559,7 @@ export const getFollowing = async (
 
   const response: PaginatedResponse<IUserDocument> = {
     data: following,
-    total: following.length,
+    total: followingCount,
     page,
     resultsCount: resultsCount[0]?.count || 0,
   };
@@ -565,9 +569,9 @@ export const getFollowing = async (
 
 /**
  * Get all the account ids that the user follows.
- * 
- * @param id The user id. 
- * @returns The account ids that the user follows. 
+ *
+ * @param id The user id.
+ * @returns The account ids that the user follows.
  */
 export const getFollowingIds = async (id: string): Promise<ObjectId[]> => {
   const usersIds = await User.aggregate([
