@@ -17,6 +17,7 @@ import {
   generateToken,
 } from 'src/utils';
 import { updateImage, uploadImage } from 'src/services/upload.service';
+import { ObjectId, Types } from 'mongoose';
 
 /**
  * Find all users.
@@ -440,25 +441,71 @@ export const unFollowOne = async (
  */
 export const getFollowers = async (
   id: string,
-  filter: IStandardObject = {}
-): Promise<IUserDocument[]> => {
-  const user = await User.findById(id).populate('followers');
+  filter: IStandardObject = {},
+  paginationOptions?: PaginationOptions
+): Promise<PaginatedResponse<IUserDocument>> => {
+  const { limit = 10, page = 1 } = paginationOptions || {};
+  const skipRecords = (page - 1) * limit;
+  const response: PaginatedResponse<IUserDocument> = {
+    data: [],
+    total: 0,
+    page,
+    resultsCount: 0,
+  };
 
-  if (!user) {
-    throw new HttpError('Usuario no encontrado', 404);
+  const user = await User.aggregate([
+    {
+      $match: { _id: new Types.ObjectId(id) },
+    },
+    {
+      $project: {
+        followers: 1,
+      },
+    },
+  ]);
+
+  if (user.length && user[0].followers === 0) {
+    return response;
   }
 
-  let followers = user.followers as IUserDocument[];
+  const followersResult = await User.aggregate<{
+    followers: IUserDocument[];
+    resultsCount: [{ count: number }];
+  }>([
+    {
+      $match: {
+        _id: {
+          $in: user[0].followers,
+        },
+        ...filter,
+      },
+    },
+    {
+      $facet: {
+        followers: [
+          {
+            $skip: skipRecords > 0 ? skipRecords : 0,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+        resultsCount: [
+          {
+            $count: 'count',
+          },
+        ],
+      },
+    },
+  ]);
 
-  if (filter.username) {
-    followers = followers.filter((user) => {
-      const { username } = filter;
-      const regex = new RegExp(username as string, 'i');
-      return regex.test(user.username);
-    });
-  }
+  const { followers, resultsCount } = followersResult[0];
 
-  return followers;
+  response.data = followers;
+  response.total = user[0].followers.length;
+  response.resultsCount = resultsCount[0]?.count || 0;
+
+  return response;
 };
 
 /**
@@ -469,17 +516,72 @@ export const getFollowers = async (
  */
 export const getFollowing = async (
   id: string,
-  filter: IStandardObject = {}
-): Promise<IUserDocument[]> => {
-  let users = await User.find({ followers: id });
+  filter: IStandardObject = {},
+  paginationOptions?: PaginationOptions
+): Promise<PaginatedResponse<IUserDocument>> => {
+  const { limit = 10, page = 1 } = paginationOptions || {};
+  const skipRecords = (page - 1) * limit;
 
-  if (filter.username) {
-    users = users.filter((user) => {
-      const { username } = filter;
-      const regex = new RegExp(username as string, 'i');
-      return regex.test(user.username);
-    });
-  }
+  const usersResult = await User.aggregate<{
+    following: IUserDocument[];
+    resultsCount: [{ count: number }];
+  }>([
+    {
+      $match: {
+        followers: new Types.ObjectId(id),
+      },
+      ...filter,
+    },
+    {
+      $facet: {
+        following: [
+          {
+            $skip: skipRecords > 0 ? skipRecords : 0,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+        resultsCount: [
+          {
+            $count: 'count',
+          },
+        ],
+      },
+    },
+  ]);
 
-  return users;
+  const { following, resultsCount } = usersResult[0];
+
+  const response: PaginatedResponse<IUserDocument> = {
+    data: following,
+    total: following.length,
+    page,
+    resultsCount: resultsCount[0]?.count || 0,
+  };
+
+  return response;
+};
+
+/**
+ * Get all the account ids that the user follows.
+ * 
+ * @param id The user id. 
+ * @returns The account ids that the user follows. 
+ */
+export const getFollowingIds = async (id: string): Promise<ObjectId[]> => {
+  const usersIds = await User.aggregate([
+    {
+      $match: {
+        followers: new Types.ObjectId(id),
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+      },
+    },
+  ]);
+
+  return usersIds;
 };

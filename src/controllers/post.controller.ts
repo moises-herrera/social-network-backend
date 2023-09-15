@@ -32,11 +32,10 @@ export const getPosts = async (
   const filter: IStandardObject = {};
 
   if (following) {
-    const followingUsers = await userService.getFollowing(
+    const followingUsers = await userService.getFollowingIds(
       currentUserId as string
     );
-    const userIds = followingUsers.map((user) => user._id);
-    filter.user = { $in: userIds };
+    filter.user = { $in: followingUsers };
   } else if (suggested) {
     filter.user = { $ne: currentUserId };
   } else if (userId) {

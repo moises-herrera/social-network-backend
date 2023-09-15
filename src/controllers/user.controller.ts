@@ -212,7 +212,18 @@ export const getUserFollowers = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const responseUser = await getFollowers(id, req.query);
+    const { username, limit, page } = req.query;
+    const filter: IStandardObject = {};
+
+    if (username) {
+      filter.username = { $regex: username as string, $options: 'i' };
+    }
+
+    const paginationOptions: PaginationOptions = {
+      limit: Number(limit) || 10,
+      page: Number(page) || 1,
+    };
+    const responseUser = await getFollowers(id, filter, paginationOptions);
 
     res.send(responseUser);
   } catch (error) {
@@ -232,7 +243,19 @@ export const getUsersFollowing = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const responseUser = await getFollowing(id, req.query);
+    const { username, limit, page } = req.query;
+    const filter: IStandardObject = {};
+
+    if (username) {
+      filter.username = { $regex: username as string, $options: 'i' };
+    }
+
+    const paginationOptions: PaginationOptions = {
+      limit: Number(limit) || 10,
+      page: Number(page) || 1,
+    };
+
+    const responseUser = await getFollowing(id, filter, paginationOptions);
 
     res.send(responseUser);
   } catch (error) {
