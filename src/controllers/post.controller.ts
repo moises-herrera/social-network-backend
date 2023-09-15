@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Types } from 'mongoose';
 import {
   IStandardObject,
   PaginationOptions,
@@ -36,12 +35,10 @@ export const getPosts = async (
     const followingUsers = await userService.getFollowing(
       currentUserId as string
     );
-    filter.user = { $in: followingUsers };
+    const userIds = followingUsers.map((user) => user._id);
+    filter.user = { $in: userIds };
   } else if (suggested) {
-    const users = await userService.getUsersSuggested({
-      _id: { $ne: new Types.ObjectId(currentUserId) },
-    });
-    filter.user = users.length > 0 ? { $in: users } : { $ne: currentUserId };
+    filter.user = { $ne: currentUserId };
   } else if (userId) {
     filter.user = userId;
   } else if (search) {

@@ -4,6 +4,7 @@ import {
   IStandardObject,
   IStandardResponse,
   IUser,
+  PaginatedResponse,
   PaginationOptions,
   SelectOptions,
 } from 'src/interfaces';
@@ -23,16 +24,46 @@ export const findAll = async (
   filter: IStandardObject = {},
   selectOptions?: SelectOptions,
   paginationOptions?: PaginationOptions
-): Promise<IPostDocument[]> => {
+): Promise<PaginatedResponse<IPostDocument>> => {
   const { include = '', select = '' } = selectOptions || {};
   const { limit = 10, page = 1 } = paginationOptions || {};
   const skipRecords = (page - 1) * limit;
 
-  const posts = await Post.find(filter)
-    .limit(limit * 1)
-    .skip(skipRecords)
-    .populate(include, select)
-    .sort({ createdAt: -1 });
+  const postsResult = await Post.aggregate<{
+    posts: IPostDocument[];
+    resultsCount: [{ count: number }];
+  }>([
+    {
+      $match: filter,
+    },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $facet: {
+        posts: [
+          {
+            $skip: skipRecords > 0 ? skipRecords : 0,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+        resultsCount: [
+          {
+            $count: 'count',
+          },
+        ],
+      },
+    },
+  ]);
+
+  const { posts, resultsCount } = postsResult[0];
+
+  await Post.populate(posts, {
+    path: include,
+    select,
+  });
 
   const userWithMostFollowers = await getUserWithMostFollowers();
 
@@ -44,7 +75,14 @@ export const findAll = async (
     });
   }
 
-  return posts;
+  const response: PaginatedResponse<IPostDocument> = {
+    data: posts,
+    total: resultsCount[0]?.count || 0,
+    page,
+    resultsCount: resultsCount[0]?.count || 0,
+  };
+
+  return response;
 };
 
 /**
