@@ -22,6 +22,8 @@ import { ObjectId, Types } from 'mongoose';
 /**
  * Find all users.
  *
+ * @param filter The filter to apply.
+ * @param paginationOptions The pagination options.
  * @returns All users.
  */
 export const findAll = async (
@@ -437,6 +439,8 @@ export const unFollowOne = async (
  * Get user followers.
  *
  * @param id The user id.
+ * @param filter The filter to apply.
+ * @param paginationOptions The pagination options.
  * @returns The user followers.
  */
 export const getFollowers = async (
@@ -512,6 +516,8 @@ export const getFollowers = async (
  * Get all the accounts that the user follows.
  *
  * @param id The user id.
+ * @param filter The filter to apply.
+ * @param paginationOptions The pagination options.
  * @returns The accounts that the user follows.
  */
 export const getFollowing = async (

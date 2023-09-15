@@ -4,6 +4,7 @@ import {
   IStandardObject,
   IStandardResponse,
   IUser,
+  IUserDocument,
   PaginatedResponse,
   PaginationOptions,
   SelectOptions,
@@ -12,12 +13,15 @@ import { Post } from 'src/models';
 import { HttpError } from 'src/utils';
 import { updateImage, uploadImage } from 'src/services/upload.service';
 import { getUserWithMostFollowers } from 'src/services/user.service';
+import { Types } from 'mongoose';
+import * as userService from 'src/services/user.service';
 
 /**
  * Find all posts.
  *
  * @param filter The filter to apply.
- * @param include The fields to include.
+ * @param selectOptions The select options.
+ * @param paginationOptions The pagination options.
  * @returns All posts.
  */
 export const findAll = async (
@@ -266,6 +270,45 @@ export const removeLikeOne = async (
   const response: IStandardResponse = {
     message: 'Post actualizado correctamente',
   };
+
+  return response;
+};
+
+/**
+ * Get post likes.
+ *
+ * @param id The post id.
+ * @param paginationOptions The pagination options.
+ * @returns The post likes.
+ */
+export const getLikes = async (
+  id: string,
+  paginationOptions?: PaginationOptions
+): Promise<PaginatedResponse<IUserDocument>> => {
+  const likesResult = await Post.aggregate([
+    {
+      $match: {
+        _id: new Types.ObjectId(id),
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        likes: 1,
+      },
+    },
+  ]);
+
+  const likes = likesResult[0]?.likes || [];
+
+  const response = await userService.findAll(
+    {
+      _id: { $in: likes },
+    },
+    paginationOptions
+  );
+
+  response.total = likes.length;
 
   return response;
 };

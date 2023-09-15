@@ -11,6 +11,7 @@ import {
   deleteOne,
   findAll,
   findById,
+  getLikes,
   likeOne,
   removeLikeOne,
   updateOne,
@@ -182,6 +183,33 @@ export const unlikePost = async (
     const { id: postId } = req.params;
 
     const responsePost = await removeLikeOne(postId, userId as string);
+
+    res.send(responsePost);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Get post likes.
+ * 
+ * @param req The request object. 
+ * @param res The response object. 
+ */
+export const getPostLikes = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id: postId } = req.params;
+    const { limit, page } = req.query;
+
+    const paginationOptions: PaginationOptions = {
+      limit: Number(limit) || 10,
+      page: Number(page) || 1,
+    };
+
+    const responsePost = await getLikes(postId, paginationOptions);
 
     res.send(responsePost);
   } catch (error) {
