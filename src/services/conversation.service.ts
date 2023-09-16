@@ -13,6 +13,7 @@ import { HttpError } from 'src/utils';
  * Find all conversations of a user.
  *
  * @param userId The user id.
+ * @param paginationOptions The pagination options.
  * @returns The conversations.
  */
 export const findAll = async (
