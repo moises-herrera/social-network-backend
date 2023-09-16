@@ -10,3 +10,6 @@ export * from './email-data.interface';
 export * from './send-email.interface';
 export * from './like.interface';
 export * from './standard-response.interface';
+export * from './pagination-options.interface';
+export * from './select-options.interface';
+export * from './paginated-response.interface';

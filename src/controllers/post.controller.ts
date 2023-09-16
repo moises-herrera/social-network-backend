@@ -1,11 +1,17 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { IStandardObject, RequestExtended } from 'src/interfaces';
+import {
+  IStandardObject,
+  PaginationOptions,
+  RequestExtended,
+  SelectOptions,
+} from 'src/interfaces';
 import {
   createOne,
   deleteOne,
   findAll,
   findById,
+  getLikes,
   likeOne,
   removeLikeOne,
   updateOne,
@@ -24,27 +30,35 @@ export const getPosts = async (
   res: Response
 ): Promise<void> => {
   const { id: currentUserId } = req;
-  const { following, suggested, userId, search } = req.query;
+  const { following, suggested, userId, search, limit, page } = req.query;
   const filter: IStandardObject = {};
 
   if (following) {
-    const followingUsers = await userService.getFollowing(
+    const followingUsers = await userService.getFollowingIds(
       currentUserId as string
     );
     filter.user = { $in: followingUsers };
   } else if (suggested) {
-    const users = await userService.getUsersSuggested({
-      _id: { $ne: new Types.ObjectId(currentUserId) },
-    });
-    filter.user = users.length > 0 ? { $in: users } : { $ne: currentUserId };
+    filter.user = { $ne: new Types.ObjectId(currentUserId as string) };
   } else if (userId) {
-    filter.user = userId;
-  } else if (search) {
-    if (search !== 'all') filter.topic = { $regex: search, $options: 'i' };
-    filter.user = { $ne: currentUserId };
+    filter.user = new Types.ObjectId(userId as string);
+  } else if (typeof search === 'string') {
+    filter.user = { $ne: new Types.ObjectId(currentUserId as string) };
+    filter.topic = { $regex: search, $options: 'i' };
   }
 
-  const posts = await findAll(filter, 'user');
+  const selectOptions: SelectOptions = {
+    include: 'user',
+    select:
+      'firstName lastName username avatar followers isAccountVerified isFounder',
+  };
+
+  const paginationOptions: PaginationOptions = {
+    limit: Number(limit) || 10,
+    page: Number(page) || 1,
+  };
+
+  const posts = await findAll(filter, selectOptions, paginationOptions);
   res.send(posts);
 };
 
@@ -169,6 +183,39 @@ export const unlikePost = async (
     const { id: postId } = req.params;
 
     const responsePost = await removeLikeOne(postId, userId as string);
+
+    res.send(responsePost);
+  } catch (error) {
+    handleHttpError(res, error);
+  }
+};
+
+/**
+ * Get post likes.
+ *
+ * @param req The request object.
+ * @param res The response object.
+ */
+export const getPostLikes = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id: postId } = req.params;
+    const { username, limit, page } = req.query;
+
+    const filter: IStandardObject = {};
+
+    if (username) {
+      filter.username = { $regex: username as string, $options: 'i' };
+    }
+
+    const paginationOptions: PaginationOptions = {
+      limit: Number(limit) || 10,
+      page: Number(page) || 1,
+    };
+
+    const responsePost = await getLikes(postId, filter, paginationOptions);
 
     res.send(responsePost);
   } catch (error) {

@@ -5,6 +5,7 @@ import {
   createPost,
   deletePost,
   getPost,
+  getPostLikes,
   getPosts,
   likePost,
   unlikePost,
@@ -76,5 +77,10 @@ router.post('/:id/like', validateJwt, likePost);
  * Remove like from a post.
  */
 router.post('/:id/unlike', validateJwt, unlikePost);
+
+/**
+ * Get post likes.
+ */
+router.get('/:id/like', validateJwt, getPostLikes);
 
 export { router };
