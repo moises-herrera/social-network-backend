@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import {
+  ConversationExtended,
   IConversation,
   IConversationDocument,
   IStandardObject,
@@ -9,6 +10,7 @@ import {
 } from 'src/interfaces';
 import { Conversation } from 'src/models';
 import { HttpError } from 'src/utils';
+import * as messageService from 'src/services/message.service';
 
 /**
  * Find all conversations of a user.
@@ -139,13 +141,22 @@ export const findById = async (
 /**
  * Create a new conversation.
  *
- * @param conversation Conversation data.
+ * @param conversation Conversation extended data.
  * @returns The created conversation.
  */
 export const createOne = async (
-  conversation: IConversation
+  conversation: ConversationExtended
 ): Promise<IStandardResponse<IConversation>> => {
-  const conversationCreated = await Conversation.create(conversation);
+  const { participants, message } = conversation;
+
+  const conversationCreated = await Conversation.create({
+    participants,
+  });
+
+  await messageService.createOne({
+    ...message,
+    conversation: conversationCreated._id,
+  });
 
   const response: IStandardResponse<IConversation> = {
     message: 'Conversación creada correctamente',
