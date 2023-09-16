@@ -192,9 +192,9 @@ export const unlikePost = async (
 
 /**
  * Get post likes.
- * 
- * @param req The request object. 
- * @param res The response object. 
+ *
+ * @param req The request object.
+ * @param res The response object.
  */
 export const getPostLikes = async (
   req: RequestExtended,
@@ -202,14 +202,20 @@ export const getPostLikes = async (
 ): Promise<void> => {
   try {
     const { id: postId } = req.params;
-    const { limit, page } = req.query;
+    const { username, limit, page } = req.query;
+
+    const filter: IStandardObject = {};
+
+    if (username) {
+      filter.username = { $regex: username as string, $options: 'i' };
+    }
 
     const paginationOptions: PaginationOptions = {
       limit: Number(limit) || 10,
       page: Number(page) || 1,
     };
 
-    const responsePost = await getLikes(postId, paginationOptions);
+    const responsePost = await getLikes(postId, filter, paginationOptions);
 
     res.send(responsePost);
   } catch (error) {

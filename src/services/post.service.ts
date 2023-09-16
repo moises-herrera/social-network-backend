@@ -283,6 +283,7 @@ export const removeLikeOne = async (
  */
 export const getLikes = async (
   id: string,
+  filter: IStandardObject = {},
   paginationOptions?: PaginationOptions
 ): Promise<PaginatedResponse<IUserDocument>> => {
   const likesResult = await Post.aggregate([
@@ -304,6 +305,7 @@ export const getLikes = async (
   const response = await userService.findAll(
     {
       _id: { $in: likes },
+      ...filter,
     },
     paginationOptions
   );
