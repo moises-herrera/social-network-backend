@@ -125,7 +125,7 @@ export const createOne = async (
  */
 export const updateOne = async (
   id: string,
-  message: IMessage
+  message: Partial<IMessage>
 ): Promise<IStandardResponse<IMessageDocument>> => {
   const messageUpdated = await Message.findByIdAndUpdate(id, message, {
     new: true,
