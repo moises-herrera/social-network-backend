@@ -7,6 +7,12 @@ import {
   getConversations,
   updateConversation,
 } from 'src/controllers/conversation.controller';
+import {
+  createMessage,
+  deleteMessage,
+  getMessages,
+  updateMessage,
+} from 'src/controllers/message.controller';
 import { validateAdminRole, validateJwt } from 'src/middleware';
 
 const router = Router();
@@ -53,5 +59,33 @@ router.put('/:id', [
  * Delete a conversation.
  */
 router.delete('/:id', [validateJwt, validateAdminRole], deleteConversation);
+
+/**
+ * Get all messages of a conversation.
+ */
+router.get('/:conversationId/messages', validateJwt, getMessages);
+
+/**
+ * Create a message.
+ */
+router.post(
+  '/:conversationId/messages',
+  [validateJwt, check('content', 'Content is required').notEmpty()],
+  createMessage
+);
+
+/**
+ * Update a message.
+ */
+router.put(
+  '/:conversationId/messages',
+  [validateJwt, check('content', 'Content is required').notEmpty()],
+  updateMessage
+);
+
+/**
+ * Delete a message.
+ */
+router.delete('/:conversationId/messages', validateJwt, deleteMessage);
 
 export { router };
