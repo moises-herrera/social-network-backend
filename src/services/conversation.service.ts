@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import {
   IConversation,
   IConversationDocument,
@@ -28,7 +29,37 @@ export const findAll = async (
   }>([
     {
       $match: {
-        participants: { $in: [userId] },
+        participants: new Types.ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: 'messages',
+        let: { conversationId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ['$conversation', '$$conversationId'],
+              },
+            },
+          },
+          {
+            $sort: { createdAt: -1 },
+          },
+          {
+            $limit: 1,
+          },
+        ],
+        as: 'lastMessage',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        participants: 1,
+        lastMessage: 1,
+        updatedAt: 1,
       },
     },
     {
@@ -54,6 +85,11 @@ export const findAll = async (
   ]);
 
   const { conversations, resultsCount } = conversationsResult[0];
+
+  await Conversation.populate(conversations, {
+    path: 'participants',
+    select: 'firstName lastName avatar',
+  });
 
   const response: PaginatedResponse<IConversationDocument> = {
     data: conversations,
