@@ -13,3 +13,6 @@ export * from './standard-response.interface';
 export * from './pagination-options.interface';
 export * from './select-options.interface';
 export * from './paginated-response.interface';
+export * from './conversation.interface';
+export * from './message.interface';
+export * from './conversation-extended.interface';
