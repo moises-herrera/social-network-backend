@@ -57,6 +57,19 @@ export const findAll = async (
       },
     },
     {
+      $addFields: {
+        participants: {
+          $filter: {
+            input: '$participants',
+            as: 'participant',
+            cond: {
+              $ne: ['$$participant', new Types.ObjectId(userId)],
+            },
+          },
+        },
+      },
+    },
+    {
       $project: {
         _id: 1,
         participants: 1,
