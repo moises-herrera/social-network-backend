@@ -76,6 +76,11 @@ export const findOne = async (
   filter: IStandardObject = {}
 ): Promise<IMessageDocument | null> => {
   const message = await Message.findOne(filter);
+
+  if (!message) {
+    throw new HttpError('Mensaje no encontrado', 404);
+  }
+
   return message;
 };
 

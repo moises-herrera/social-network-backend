@@ -78,6 +78,10 @@ export const findOne = async (
 ): Promise<IConversationDocument | null> => {
   const conversation = await Conversation.findById(filter).populate(include);
 
+  if (!conversation) {
+    throw new HttpError('Conversación no encontrada', 404);
+  }
+
   return conversation;
 };
 
@@ -146,9 +150,9 @@ export const updateOne = async (
 
 /**
  * Delete a conversation by id.
- * 
- * @param id The conversation id. 
- * @returns A standard response. 
+ *
+ * @param id The conversation id.
+ * @returns A standard response.
  */
 export const deleteOne = async (
   id: string
