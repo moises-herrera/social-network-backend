@@ -44,6 +44,9 @@ export const findAll = async (
           {
             $limit: limit,
           },
+          {
+            $sort: { createdAt: 1 },
+          },
         ],
         resultsCount: [
           {
