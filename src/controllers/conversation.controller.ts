@@ -20,14 +20,18 @@ export const getConversations = async (
   res: Response
 ): Promise<void> => {
   const { id } = req;
-  const { page, limit } = req.query;
+  const { search, page, limit } = req.query;
 
   const paginationOptions: PaginationOptions = {
     page: Number(page) || 1,
     limit: Number(limit) || 10,
   };
 
-  const response = await findAll(id as string, paginationOptions);
+  const response = await findAll(
+    id as string,
+    search as string,
+    paginationOptions
+  );
 
   res.send(response);
 };
