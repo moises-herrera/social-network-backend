@@ -1,15 +1,16 @@
 import cors from 'cors';
 import express from 'express';
 import { router } from './routes';
-import dbConnect from './config/db';
-import { configCloudinary } from './config/cloudinary';
+import { dbConnect, configCloudinary, app, io } from 'src/config';
 import path from 'path';
 
 const PORT = process.env.PORT || 3000;
 
-const app = express();
-
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+  })
+);
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,6 +25,16 @@ dbConnect().then(() => {
 
 app.get('*', (_req, res) => {
   res.sendFile(path.resolve(__dirname, 'public/index.html'));
+});
+
+io.on('connection', (socket) => {
+  socket.on('join', (conversationId: string) => {
+    socket.join(conversationId);
+  });
+});
+
+io.on('disconnect', () => {
+  console.log('Disconnected');
 });
 
 app.listen(PORT, () => {

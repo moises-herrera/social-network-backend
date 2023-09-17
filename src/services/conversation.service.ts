@@ -21,6 +21,7 @@ import * as messageService from 'src/services/message.service';
  */
 export const findAll = async (
   userId: string,
+  participantsNameFilter: string = '',
   paginationOptions?: PaginationOptions
 ): Promise<PaginatedResponse<IConversationDocument>> => {
   const { page = 1, limit = 10 } = paginationOptions || {};
@@ -58,12 +59,53 @@ export const findAll = async (
     },
     {
       $addFields: {
+        lastMessage: {
+          $arrayElemAt: ['$lastMessage', 0],
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        let: { participants: '$participants' },
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              fullName: {
+                $concat: ['$firstName', ' ', '$lastName'],
+              },
+              avatar: 1,
+            },
+          },
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $ne: ['$_id', new Types.ObjectId(userId)],
+                  },
+                  {
+                    $in: ['$_id', '$$participants'],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'participants',
+      },
+    },
+    {
+      $addFields: {
         participants: {
-          $filter: {
+          $map: {
             input: '$participants',
             as: 'participant',
-            cond: {
-              $ne: ['$$participant', new Types.ObjectId(userId)],
+            in: {
+              _id: '$$participant._id',
+              fullName: '$$participant.fullName',
+              avatar: '$$participant.avatar',
             },
           },
         },
@@ -99,12 +141,19 @@ export const findAll = async (
     },
   ]);
 
-  const { conversations, resultsCount } = conversationsResult[0];
+  let { conversations, resultsCount } = conversationsResult[0];
 
-  await Conversation.populate(conversations, {
-    path: 'participants',
-    select: 'firstName lastName avatar',
-  });
+  if (participantsNameFilter) {
+    conversations = conversations.filter((conversation) => {
+      const participants = (conversation.participants as any).map(
+        (participant: { fullName: any }) => participant.fullName
+      );
+
+      return participants.some((participant: any) =>
+        participant.toLowerCase().includes(participantsNameFilter.toLowerCase())
+      );
+    });
+  }
 
   const response: PaginatedResponse<IConversationDocument> = {
     data: conversations,

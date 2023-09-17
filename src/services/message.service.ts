@@ -44,6 +44,9 @@ export const findAll = async (
           {
             $limit: limit,
           },
+          {
+            $sort: { createdAt: 1 },
+          },
         ],
         resultsCount: [
           {
@@ -104,7 +107,7 @@ export const findById = async (
  * @returns The message created.
  */
 export const createOne = async (
-  message: IMessage
+  message: Partial<IMessage>
 ): Promise<IStandardResponse<IMessageDocument>> => {
   const messageCreated = await Message.create(message);
 
