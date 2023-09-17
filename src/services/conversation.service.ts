@@ -58,6 +58,13 @@ export const findAll = async (
     },
     {
       $addFields: {
+        lastMessage: {
+          $arrayElemAt: ['$lastMessage', 0],
+        },
+      },
+    },
+    {
+      $addFields: {
         participants: {
           $filter: {
             input: '$participants',
