@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-import { IMessage, PaginationOptions, RequestExtended } from 'src/interfaces';
+import { PaginationOptions, RequestExtended } from 'src/interfaces';
 import {
   createOne,
   deleteOne,
@@ -51,7 +51,7 @@ export const createMessage = async (
       content,
       sender: new Types.ObjectId(id as string),
       conversation: new Types.ObjectId(conversationId),
-    } as IMessage);
+    });
 
     res.send(message);
   } catch (error) {
