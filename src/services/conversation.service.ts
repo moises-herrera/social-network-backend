@@ -120,7 +120,9 @@ export const findAll = async (
       },
     },
     {
-      $sort: { updatedAt: -1 },
+      $sort: {
+        'lastMessage.createdAt': -1,
+      },
     },
     {
       $facet: {
