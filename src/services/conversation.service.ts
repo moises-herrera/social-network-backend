@@ -203,10 +203,12 @@ export const findById = async (
 /**
  * Create a new conversation.
  *
+ * @param userId The user id.
  * @param conversation Conversation extended data.
  * @returns The created conversation.
  */
 export const createOne = async (
+  userId: string,
   conversation: ConversationExtended
 ): Promise<IStandardResponse<IConversation>> => {
   const { participants, message } = conversation;
@@ -220,9 +222,14 @@ export const createOne = async (
     conversation: conversationCreated._id,
   });
 
+  const conversationMapped = await findAll(userId, '', {
+    limit: 1,
+    page: 1,
+  });
+
   const response: IStandardResponse<IConversation> = {
     message: 'Conversación creada correctamente',
-    data: conversationCreated,
+    data: conversationMapped.data[0],
   };
 
   return response;

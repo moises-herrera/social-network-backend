@@ -68,7 +68,8 @@ export const createConversation = async (
   res: Response
 ): Promise<void> => {
   try {
-    const response = await createOne(req.body);
+    const { id } = req;
+    const response = await createOne(id as string, req.body);
 
     res.send(response);
   } catch (error) {
