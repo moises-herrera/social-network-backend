@@ -4,26 +4,70 @@ import {
   IStandardObject,
   IStandardResponse,
   IUser,
+  IUserDocument,
+  PaginatedResponse,
+  PaginationOptions,
+  SelectOptions,
 } from 'src/interfaces';
 import { Post } from 'src/models';
 import { HttpError } from 'src/utils';
 import { updateImage, uploadImage } from 'src/services/upload.service';
 import { getUserWithMostFollowers } from 'src/services/user.service';
+import { Types } from 'mongoose';
+import * as userService from 'src/services/user.service';
 
 /**
  * Find all posts.
  *
  * @param filter The filter to apply.
- * @param include The fields to include.
+ * @param selectOptions The select options.
+ * @param paginationOptions The pagination options.
  * @returns All posts.
  */
 export const findAll = async (
   filter: IStandardObject = {},
-  include: string = ''
-): Promise<IPostDocument[]> => {
-  const posts = await Post.find(filter)
-    .populate(include)
-    .sort({ createdAt: -1 });
+  selectOptions?: SelectOptions,
+  paginationOptions?: PaginationOptions
+): Promise<PaginatedResponse<IPostDocument>> => {
+  const { include = '', select = '' } = selectOptions || {};
+  const { limit = 10, page = 1 } = paginationOptions || {};
+  const skipRecords = (page - 1) * limit;
+
+  const postsResult = await Post.aggregate<{
+    posts: IPostDocument[];
+    resultsCount: [{ count: number }];
+  }>([
+    {
+      $match: filter,
+    },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $facet: {
+        posts: [
+          {
+            $skip: skipRecords > 0 ? skipRecords : 0,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+        resultsCount: [
+          {
+            $count: 'count',
+          },
+        ],
+      },
+    },
+  ]);
+
+  const { posts, resultsCount } = postsResult[0];
+
+  await Post.populate(posts, {
+    path: include,
+    select,
+  });
 
   const userWithMostFollowers = await getUserWithMostFollowers();
 
@@ -35,7 +79,14 @@ export const findAll = async (
     });
   }
 
-  return posts;
+  const response: PaginatedResponse<IPostDocument> = {
+    data: posts,
+    total: resultsCount[0]?.count || 0,
+    page,
+    resultsCount: resultsCount[0]?.count || 0,
+  };
+
+  return response;
 };
 
 /**
@@ -219,6 +270,47 @@ export const removeLikeOne = async (
   const response: IStandardResponse = {
     message: 'Post actualizado correctamente',
   };
+
+  return response;
+};
+
+/**
+ * Get post likes.
+ *
+ * @param id The post id.
+ * @param paginationOptions The pagination options.
+ * @returns The post likes.
+ */
+export const getLikes = async (
+  id: string,
+  filter: IStandardObject = {},
+  paginationOptions?: PaginationOptions
+): Promise<PaginatedResponse<IUserDocument>> => {
+  const likesResult = await Post.aggregate([
+    {
+      $match: {
+        _id: new Types.ObjectId(id),
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        likes: 1,
+      },
+    },
+  ]);
+
+  const likes = likesResult[0]?.likes || [];
+
+  const response = await userService.findAll(
+    {
+      _id: { $in: likes },
+      ...filter,
+    },
+    paginationOptions
+  );
+
+  response.total = likes.length;
 
   return response;
 };

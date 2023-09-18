@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
-import { isObjectIdOrHexString } from 'mongoose';
-import { RequestExtended } from 'src/interfaces';
+import { Types, isObjectIdOrHexString } from 'mongoose';
+import {
+  IStandardObject,
+  PaginationOptions,
+  RequestExtended,
+} from 'src/interfaces';
 import {
   changeUserPassword,
   deleteOne,
@@ -22,11 +26,34 @@ import { handleHttpError } from 'src/utils';
  * @param req The request object.
  * @param res The response object.
  */
-export const getUsers = async (req: Request, res: Response): Promise<void> => {
-  const { username } = req.query;
-  const filter = username ? { username: { $regex: username as string } } : {};
+export const getUsers = async (
+  req: RequestExtended,
+  res: Response
+): Promise<void> => {
+  const { username, name, excludeCurrentUser, limit, page } = req.query;
+  const filter: IStandardObject = {};
 
-  const users = await findAll(filter);
+  if (username) {
+    filter.username = { $regex: username as string, $options: 'i' };
+  }
+
+  if (name) {
+    filter.$or = [
+      { firstName: { $regex: name as string, $options: 'i' } },
+      { lastName: { $regex: name as string, $options: 'i' } },
+    ];
+  }
+
+  if (excludeCurrentUser) {
+    filter._id = { $ne: new Types.ObjectId(req.id) };
+  }
+
+  const paginationOptions: PaginationOptions = {
+    limit: Number(limit) || 10,
+    page: Number(page) || 1,
+  };
+
+  const users = await findAll(filter, paginationOptions);
   res.send(users);
 };
 
@@ -192,7 +219,18 @@ export const getUserFollowers = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const responseUser = await getFollowers(id, req.query);
+    const { username, limit, page } = req.query;
+    const filter: IStandardObject = {};
+
+    if (username) {
+      filter.username = { $regex: username as string, $options: 'i' };
+    }
+
+    const paginationOptions: PaginationOptions = {
+      limit: Number(limit) || 10,
+      page: Number(page) || 1,
+    };
+    const responseUser = await getFollowers(id, filter, paginationOptions);
 
     res.send(responseUser);
   } catch (error) {
@@ -212,7 +250,19 @@ export const getUsersFollowing = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const responseUser = await getFollowing(id, req.query);
+    const { username, limit, page } = req.query;
+    const filter: IStandardObject = {};
+
+    if (username) {
+      filter.username = { $regex: username as string, $options: 'i' };
+    }
+
+    const paginationOptions: PaginationOptions = {
+      limit: Number(limit) || 10,
+      page: Number(page) || 1,
+    };
+
+    const responseUser = await getFollowing(id, filter, paginationOptions);
 
     res.send(responseUser);
   } catch (error) {
