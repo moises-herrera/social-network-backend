@@ -30,11 +30,18 @@ export const getUsers = async (
   req: RequestExtended,
   res: Response
 ): Promise<void> => {
-  const { username, excludeCurrentUser, limit, page } = req.query;
+  const { username, name, excludeCurrentUser, limit, page } = req.query;
   const filter: IStandardObject = {};
 
   if (username) {
     filter.username = { $regex: username as string, $options: 'i' };
+  }
+
+  if (name) {
+    filter.$or = [
+      { firstName: { $regex: name as string, $options: 'i' } },
+      { lastName: { $regex: name as string, $options: 'i' } },
+    ];
   }
 
   if (excludeCurrentUser) {

@@ -28,7 +28,7 @@ app.get('*', (_req, res) => {
 });
 
 io.on('connection', (socket) => {
-  socket.on('join', (conversationId: string) => {
+  socket.on('join', (conversationId: string | string[]) => {
     socket.join(conversationId);
   });
 });
