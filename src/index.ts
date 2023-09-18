@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import { router } from './routes';
-import { dbConnect, configCloudinary, app, io } from 'src/config';
+import { dbConnect, configCloudinary, app, io, server } from 'src/config';
 import path from 'path';
 
 const PORT = process.env.PORT || 3000;
@@ -37,6 +37,6 @@ io.on('disconnect', () => {
   console.log('Disconnected');
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
