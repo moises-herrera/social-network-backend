@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { io } from 'src/config';
 import { PaginationOptions, RequestExtended } from 'src/interfaces';
 import {
   createOne,
@@ -70,6 +71,12 @@ export const createConversation = async (
   try {
     const { id } = req;
     const response = await createOne(id as string, req.body);
+
+    response.data?.participants.forEach((participant) => {
+      if (participant._id.toString() !== id) {
+        io.to(participant._id.toString()).emit('new-chat', response.data);
+      }
+    });
 
     res.send(response);
   } catch (error) {

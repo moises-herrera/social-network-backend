@@ -83,9 +83,6 @@ export const findAll = async (
               $expr: {
                 $and: [
                   {
-                    $ne: ['$_id', new Types.ObjectId(userId)],
-                  },
-                  {
                     $in: ['$_id', '$$participants'],
                   },
                 ],
