@@ -13,7 +13,12 @@ import {
   getMessages,
   updateMessage,
 } from 'src/controllers/message.controller';
-import { validateAdminRole, validateJwt } from 'src/middleware';
+import {
+  validateAdminRole,
+  validateJwt,
+  validateConversationPermissions,
+  validateMessagePermissions,
+} from 'src/middleware';
 
 const router = Router();
 
@@ -63,14 +68,22 @@ router.delete('/:id', [validateJwt, validateAdminRole], deleteConversation);
 /**
  * Get all messages of a conversation.
  */
-router.get('/:conversationId/messages', validateJwt, getMessages);
+router.get(
+  '/:conversationId/messages',
+  [validateJwt, validateConversationPermissions],
+  getMessages
+);
 
 /**
  * Create a message.
  */
 router.post(
   '/:conversationId/messages',
-  [validateJwt, check('content', 'Content is required').notEmpty()],
+  [
+    validateJwt,
+    validateConversationPermissions,
+    check('content', 'Content is required').notEmpty(),
+  ],
   createMessage
 );
 
@@ -78,14 +91,23 @@ router.post(
  * Update a message.
  */
 router.put(
-  '/:conversationId/messages',
-  [validateJwt, check('content', 'Content is required').notEmpty()],
+  '/:conversationId/messages/:id',
+  [
+    validateJwt,
+    validateConversationPermissions,
+    validateMessagePermissions,
+    check('content', 'Content is required').notEmpty(),
+  ],
   updateMessage
 );
 
 /**
  * Delete a message.
  */
-router.delete('/:conversationId/messages', validateJwt, deleteMessage);
+router.delete(
+  '/:conversationId/messages/:id',
+  [validateJwt, validateConversationPermissions, validateMessagePermissions],
+  deleteMessage
+);
 
 export { router };

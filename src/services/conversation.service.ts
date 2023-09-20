@@ -175,7 +175,7 @@ export const findOne = async (
   filter: IStandardObject = {},
   include: string = ''
 ): Promise<IConversationDocument | null> => {
-  const conversation = await Conversation.findById(filter).populate(include);
+  const conversation = await Conversation.findOne(filter).populate(include);
 
   if (!conversation) {
     throw new HttpError('Conversación no encontrada', 404);
