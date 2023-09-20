@@ -1,11 +1,12 @@
 import { Response } from 'express';
+import { Types } from 'mongoose';
 import { io } from 'src/config';
 import { PaginationOptions, RequestExtended } from 'src/interfaces';
 import {
   createOne,
   deleteOne,
   findAll,
-  findById,
+  findOne,
   updateOne,
 } from 'src/services/conversation.service';
 import { handleHttpError } from 'src/utils';
@@ -48,9 +49,13 @@ export const getConversation = async (
   res: Response
 ): Promise<void> => {
   try {
+    const { id: userId } = req;
     const { id } = req.params;
 
-    const conversation = await findById(id as string);
+    const conversation = await findOne({
+      _id: id,
+      participants: new Types.ObjectId(userId),
+    });
 
     res.send(conversation);
   } catch (error) {
