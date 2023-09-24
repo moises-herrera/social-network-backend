@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import multer from 'multer';
 import {
   createPost,
   deletePost,
@@ -18,7 +17,6 @@ import {
 } from 'src/middleware';
 
 const router = Router();
-const upload = multer({ storage: multer.memoryStorage() });
 
 /**
  * Get all posts.
@@ -37,7 +35,6 @@ router.post(
   '/',
   [
     validateJwt,
-    upload.single('image'),
     check('title', 'Title is required').not().isEmpty(),
     check('topic', 'Topic is required').not().isEmpty(),
     check('description', 'Content is required').not().isEmpty(),
@@ -54,7 +51,6 @@ router.put(
   [
     validateJwt,
     validatePostPermissions,
-    upload.single('image'),
     check('title', 'Title is required').not().isEmpty(),
     check('topic', 'Topic is required').not().isEmpty(),
     check('description', 'Content is required').not().isEmpty(),

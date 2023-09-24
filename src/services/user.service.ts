@@ -223,8 +223,7 @@ export const loginUser = async (auth: IAuth): Promise<IAuthResponse> => {
  */
 export const updateOne = async (
   id: string,
-  user: IUser,
-  avatarBuffer?: Buffer
+  user: IUser
 ): Promise<IUserDocument | null> => {
   const userToUpdate = await findById(id);
 
@@ -256,20 +255,7 @@ export const updateOne = async (
     user.password = await encryptText(userPassword);
   }
 
-  let avatarUrl: string | undefined;
-
-  if (avatarBuffer) {
-    avatarUrl = !userToUpdate.avatar
-      ? await uploadImage('users', avatarBuffer)
-      : await updateImage('users', avatarBuffer, userToUpdate.avatar);
-  }
-
-  const userData: IUser = {
-    ...user,
-    avatar: avatarUrl || userToUpdate.avatar,
-  };
-
-  const updatedUser = await User.findByIdAndUpdate(id, userData, {
+  const updatedUser = await User.findByIdAndUpdate(id, user, {
     new: true,
   });
 
