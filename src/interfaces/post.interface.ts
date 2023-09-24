@@ -1,4 +1,5 @@
 import { Model, Types } from 'mongoose';
+import { FileStored } from '.';
 
 /**
  * Represents the information of a post.
@@ -9,6 +10,9 @@ export interface IPost {
 
   /** Image url. */
   image?: string;
+
+  /** Post files. */
+  files: FileStored[];
 
   /** Topic. */
   topic: string;
