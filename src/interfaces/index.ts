@@ -16,3 +16,4 @@ export * from './paginated-response.interface';
 export * from './conversation.interface';
 export * from './message.interface';
 export * from './conversation-extended.interface';
+export * from './file-stored.interface';

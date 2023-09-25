@@ -90,8 +90,7 @@ export const updateUser = async (
   try {
     const { id } = req.params;
 
-    const avatarBuffer = req.file?.buffer;
-    const responseUser = await updateOne(id, req.body, avatarBuffer as Buffer);
+    const responseUser = await updateOne(id, req.body);
 
     res.send(responseUser);
   } catch (error) {

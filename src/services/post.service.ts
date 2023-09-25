@@ -11,7 +11,6 @@ import {
 } from 'src/interfaces';
 import { Post } from 'src/models';
 import { HttpError } from 'src/utils';
-import { updateImage, uploadImage } from 'src/services/upload.service';
 import { getUserWithMostFollowers } from 'src/services/user.service';
 import { Types } from 'mongoose';
 import * as userService from 'src/services/user.service';
@@ -127,14 +126,8 @@ export const findById = async (
  * @returns The created post.
  */
 export const createOne = async (
-  post: IPost,
-  imageBuffer?: Buffer
+  post: IPost
 ): Promise<IStandardResponse<IPost>> => {
-  if (imageBuffer) {
-    const imageUrl = await uploadImage('posts', imageBuffer);
-    post.image = imageUrl;
-  }
-
   const createdPost = await Post.create(post);
 
   const response: IStandardResponse<IPost> = {
@@ -154,8 +147,7 @@ export const createOne = async (
  */
 export const updateOne = async (
   id: string,
-  post: IPost,
-  imageBuffer?: Buffer
+  post: IPost
 ): Promise<IStandardResponse<IPost>> => {
   const postToUpdate = await findById(id);
 
@@ -163,20 +155,7 @@ export const updateOne = async (
     throw new HttpError('Post no encontrado', 404);
   }
 
-  let imageUrl: string | undefined;
-
-  if (imageBuffer) {
-    imageUrl = !postToUpdate.image
-      ? await uploadImage('posts', imageBuffer)
-      : await updateImage('posts', imageBuffer, postToUpdate?.image);
-  }
-
-  const postData: IPost = {
-    ...post,
-    image: imageUrl || postToUpdate.image,
-  };
-
-  const updatedPost = await Post.findByIdAndUpdate(id, postData, {
+  const updatedPost = await Post.findByIdAndUpdate(id, post, {
     new: true,
   });
 

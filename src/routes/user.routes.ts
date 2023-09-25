@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import multer from 'multer';
 import {
   changePassword,
   deleteUser,
@@ -21,7 +20,6 @@ import {
 } from 'src/middleware';
 
 const router = Router();
-const upload = multer({ storage: multer.memoryStorage() });
 
 /**
  * Get all users.
@@ -41,7 +39,6 @@ router.put(
   [
     validateJwt,
     validateUserSelfPermissions,
-    upload.single('avatar'),
     check('firstName', 'First name is required').not().isEmpty(),
     check('lastName', 'Last name is required').not().isEmpty(),
     check('username', 'User name is required').not().isEmpty(),

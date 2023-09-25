@@ -10,6 +10,12 @@ const PostSchema = new Schema<IPostDocument>(
     image: {
       type: String,
     },
+    files: [
+      {
+        type: Object,
+        default: [],
+      },
+    ],
     topic: {
       type: String,
       required: true,
@@ -35,8 +41,8 @@ const PostSchema = new Schema<IPostDocument>(
         type: Schema.Types.ObjectId,
         ref: 'users',
         default: [],
-      }
-    ]
+      },
+    ],
   },
   {
     timestamps: true,
@@ -47,9 +53,6 @@ PostSchema.statics.buildPost = (post: IPost) => {
   return new Post(post);
 };
 
-const Post = model<IPostDocument, IPostModel>(
-  'posts',
-  PostSchema
-);
+const Post = model<IPostDocument, IPostModel>('posts', PostSchema);
 
 export default Post;
