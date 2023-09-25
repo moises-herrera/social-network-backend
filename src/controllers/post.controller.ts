@@ -92,9 +92,8 @@ export const createPost = async (
   try {
     const { id: userId } = req;
     const postData = { ...req.body, user: userId };
-    const imageBuffer = req.file?.buffer;
 
-    const post = await createOne(postData, imageBuffer);
+    const post = await createOne(postData);
 
     res.send(post);
   } catch (error) {
@@ -116,8 +115,7 @@ export const updatePost = async (
     const { id } = req.params;
     const { id: userId } = req;
     const postData = { ...req.body, user: userId };
-    const imageBuffer = req.file?.buffer;
-    const responsePost = await updateOne(id, postData, imageBuffer);
+    const responsePost = await updateOne(id, postData);
 
     res.send(responsePost);
   } catch (error) {
