@@ -16,7 +16,6 @@ import {
   HttpError,
   generateToken,
 } from 'src/utils';
-import { updateImage, uploadImage } from 'src/services/upload.service';
 import { ObjectId, Types } from 'mongoose';
 
 /**
