@@ -43,6 +43,10 @@ const PostSchema = new Schema<IPostDocument>(
         default: [],
       },
     ],
+    isAnonymous: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
