@@ -28,6 +28,9 @@ export interface IPost {
 
   /** Likes. */
   likes: Types.ObjectId[];
+
+  /** Whether the post is anonymous. */
+  isAnonymous: boolean;
 }
 
 /**
