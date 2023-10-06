@@ -199,6 +199,13 @@ export const loginUser = async (auth: IAuth): Promise<IAuthResponse> => {
     existingUser.password
   );
 
+  const lastUpdated = new Date((existingUser as any).updatedAt);
+  const mustUpdatePassword = !isPasswordValid && lastUpdated < new Date(2023, 8, 25);
+
+  if (mustUpdatePassword) {
+    throw new HttpError('Debe cambiar su contraseña', 400);
+  }
+
   if (!isPasswordValid) {
     throw new HttpError('Email o contraseña invalidos', 400);
   }
