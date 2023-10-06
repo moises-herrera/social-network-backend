@@ -38,10 +38,12 @@ export const getPosts = async (
       currentUserId as string
     );
     filter.user = { $in: followingUsers };
+    filter.isAnonymous = { $ne: true }
   } else if (suggested) {
     filter.user = { $ne: new Types.ObjectId(currentUserId as string) };
   } else if (userId) {
     filter.user = new Types.ObjectId(userId as string);
+    filter.isAnonymous = { $ne: true }
   } else if (typeof search === 'string') {
     filter.user = { $ne: new Types.ObjectId(currentUserId as string) };
     filter.topic = { $regex: search, $options: 'i' };

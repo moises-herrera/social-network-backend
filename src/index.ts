@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import { router } from './routes';
-import { dbConnect, configCloudinary, app, io, server } from 'src/config';
+import { dbConnect, app, io, server } from 'src/config';
 import path from 'path';
 
 const PORT = process.env.PORT || 3000;
@@ -16,8 +16,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(router);
-
-configCloudinary();
 
 dbConnect().then(() => {
   console.log('DB connected');
