@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import {
+  INotification,
   IStandardObject,
   PaginationOptions,
   RequestExtended,
@@ -18,6 +19,7 @@ import {
 } from 'src/services/post.service';
 import * as userService from 'src/services/user.service';
 import { handleHttpError } from 'src/utils';
+import * as notificationService from 'src/services/notification.service';
 
 /**
  * Get all posts.
@@ -161,6 +163,18 @@ export const likePost = async (
     const { id: postId } = req.params;
 
     const responsePost = await likeOne(postId, userId as string);
+
+    if (responsePost.data && userId !== responsePost.data.user.toString()) {
+      const notification: INotification = {
+        note: 'Le ha gustado tu publicación.',
+        recipient: responsePost.data.user,
+        sender: new Types.ObjectId(userId as string),
+        post: new Types.ObjectId(postId),
+        hasRead: false,
+      };
+
+      await notificationService.createOne(notification);
+    }
 
     res.send(responsePost);
   } catch (error) {

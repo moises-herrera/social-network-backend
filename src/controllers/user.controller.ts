@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Types, isObjectIdOrHexString } from 'mongoose';
 import {
+  INotification,
   IStandardObject,
   PaginationOptions,
   RequestExtended,
@@ -19,6 +20,7 @@ import {
   verifyUserEmail,
 } from 'src/services/user.service';
 import { handleHttpError } from 'src/utils';
+import * as notificationService from 'src/services/notification.service';
 
 /**
  * Get all users.
@@ -177,6 +179,15 @@ export const followUser = async (
     const { id: userId } = req.params;
 
     const responseUser = await followOne(userId, followerId as string);
+
+    const notification: INotification = {
+      note: 'Te ha seguido.',
+      recipient: new Types.ObjectId(userId),
+      sender: new Types.ObjectId(followerId as string),
+      hasRead: false,
+    };
+
+    await notificationService.createOne(notification);
 
     res.send(responseUser);
   } catch (error) {

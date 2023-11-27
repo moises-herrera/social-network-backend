@@ -14,7 +14,7 @@ export interface INotification {
   sender: Types.ObjectId;
 
   /** Whether the notification has been read or not. */
-  hasRead: boolean;
+  hasRead?: boolean;
 
   /** Post id of the post that the notification is about. */
   post?: Types.ObjectId;

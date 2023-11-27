@@ -11,10 +11,12 @@ const NotificationSchema = new Schema<INotificationDocument>(
     recipient: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'users',
     },
     sender: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'users',
     },
     hasRead: {
       type: Boolean,

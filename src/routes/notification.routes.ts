@@ -36,3 +36,5 @@ router.put(
   [validateJwt, check('hasRead', 'hasRead is required').not().isEmpty()],
   validateFields
 );
+
+export { router };
