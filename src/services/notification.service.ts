@@ -58,6 +58,11 @@ export const findAll = async (
 
   const { notifications, resultsCount } = notificationResults[0];
 
+  await Notification.populate(notifications, {
+    path: 'sender',
+    select: 'username avatar',
+  });
+
   const response: PaginatedResponse<INotificationDocument> = {
     data: notifications,
     resultsCount: resultsCount[0]?.count || 0,
@@ -89,10 +94,10 @@ export const createOne = async (
 
 /**
  * Update a notification.
- * 
- * @param id The notification id. 
+ *
+ * @param id The notification id.
  * @param notification The notification to update.
- * @returns The updated notification. 
+ * @returns The updated notification.
  */
 export const updateOne = async (
   id: string,
@@ -118,13 +123,11 @@ export const updateOne = async (
 
 /**
  * Delete a notification.
- * 
- * @param id The notification id. 
- * @returns A standard response. 
+ *
+ * @param id The notification id.
+ * @returns A standard response.
  */
-export const deleteOne = async (
-  id: string
-): Promise<IStandardResponse> => {
+export const deleteOne = async (id: string): Promise<IStandardResponse> => {
   const notificationDeleted = await Notification.findByIdAndDelete(id);
 
   if (!notificationDeleted) {
@@ -136,4 +139,4 @@ export const deleteOne = async (
   };
 
   return response;
-}
+};
