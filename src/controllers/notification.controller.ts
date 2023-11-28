@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { Types } from 'mongoose';
 import { PaginationOptions, RequestExtended } from 'src/interfaces';
 import {
   createOne,
@@ -79,9 +80,9 @@ export const updateNotification = async (
 
 /**
  * Delete a notification.
- * 
- * @param req The request object. 
- * @param res The response object. 
+ *
+ * @param req The request object.
+ * @param res The response object.
  */
 export const deleteNotification = async (
   req: RequestExtended,
@@ -89,7 +90,9 @@ export const deleteNotification = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    const response = await deleteOne(id);
+    const response = await deleteOne({
+      _id: new Types.ObjectId(id),
+    });
 
     res.send(response);
   } catch (error) {
