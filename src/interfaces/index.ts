@@ -17,3 +17,4 @@ export * from './conversation.interface';
 export * from './message.interface';
 export * from './conversation-extended.interface';
 export * from './file-stored.interface';
+export * from './notification.interface';

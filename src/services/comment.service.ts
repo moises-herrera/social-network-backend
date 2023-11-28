@@ -153,7 +153,9 @@ export const updateOne = async (
  * @param id The comment id.
  * @returns The deleted comment.
  */
-export const deleteOne = async (id: string): Promise<IStandardResponse> => {
+export const deleteOne = async (
+  id: string
+): Promise<IStandardResponse<ICommentDocument>> => {
   const deletedComment = await Comment.findByIdAndDelete(id);
 
   if (!deletedComment) {
@@ -164,8 +166,9 @@ export const deleteOne = async (id: string): Promise<IStandardResponse> => {
     $pull: { comments: deletedComment._id },
   });
 
-  const response: IStandardResponse = {
+  const response: IStandardResponse<ICommentDocument> = {
     message: 'Comentario eliminado correctamente',
+    data: deletedComment,
   };
 
   return response;
