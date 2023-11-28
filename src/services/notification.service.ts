@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import {
   INotification,
   INotificationDocument,
+  IStandardObject,
   IStandardResponse,
   PaginatedResponse,
   PaginationOptions,
@@ -124,11 +125,13 @@ export const updateOne = async (
 /**
  * Delete a notification.
  *
- * @param id The notification id.
+ * @param filter The filter.
  * @returns A standard response.
  */
-export const deleteOne = async (id: string): Promise<IStandardResponse> => {
-  const notificationDeleted = await Notification.findByIdAndDelete(id);
+export const deleteOne = async (
+  filter: IStandardObject
+): Promise<IStandardResponse> => {
+  const notificationDeleted = await Notification.findOneAndDelete(filter);
 
   if (!notificationDeleted) {
     throw new HttpError('Notificación no encontrada', 404);

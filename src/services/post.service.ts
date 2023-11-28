@@ -232,7 +232,7 @@ export const likeOne = async (
 export const removeLikeOne = async (
   id: string,
   userId: string
-): Promise<IStandardResponse> => {
+): Promise<IStandardResponse<IPostDocument>> => {
   const updatedPost = await Post.findByIdAndUpdate(
     id,
     {
@@ -247,8 +247,9 @@ export const removeLikeOne = async (
     throw new HttpError('Post no encontrado', 404);
   }
 
-  const response: IStandardResponse = {
+  const response: IStandardResponse<IPostDocument> = {
     message: 'Post actualizado correctamente',
+    data: updatedPost,
   };
 
   return response;

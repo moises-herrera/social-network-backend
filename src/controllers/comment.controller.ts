@@ -129,6 +129,22 @@ export const deleteComment = async (
     const { id } = req.params;
 
     const responseComment = await deleteOne(id);
+    
+    if (responseComment.data) {
+      const post = await postService.findById(
+        responseComment.data?.post.toString()
+      );
+      const authorId = post?.user.toString();
+
+      if (post && req.id !== authorId) {
+        await notificationService.deleteOne({
+          recipient: new Types.ObjectId(authorId),
+          sender: new Types.ObjectId(req.id as string),
+          post: new Types.ObjectId(post._id as string),
+          comment: new Types.ObjectId(id),
+        });
+      }
+    }
 
     res.send(responseComment);
   } catch (error) {

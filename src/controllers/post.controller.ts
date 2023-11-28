@@ -198,6 +198,15 @@ export const unlikePost = async (
 
     const responsePost = await removeLikeOne(postId, userId as string);
 
+    if (responsePost.data && userId !== responsePost.data.user.toString()) {
+      await notificationService.deleteOne({
+        recipient: responsePost.data.user,
+        sender: new Types.ObjectId(userId as string),
+        post: new Types.ObjectId(postId),
+        comment: null,
+      });
+    }
+
     res.send(responsePost);
   } catch (error) {
     handleHttpError(res, error);

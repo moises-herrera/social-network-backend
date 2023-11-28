@@ -211,6 +211,11 @@ export const unFollowUser = async (
 
     const responseUser = await unFollowOne(userId, followerId as string);
 
+    await notificationService.deleteOne({
+      recipient: new Types.ObjectId(userId),
+      sender: new Types.ObjectId(followerId as string),
+    });
+
     res.send(responseUser);
   } catch (error) {
     handleHttpError(res, error);
