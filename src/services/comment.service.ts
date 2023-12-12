@@ -156,7 +156,8 @@ export const updateOne = async (
 export const deleteOne = async (
   id: string
 ): Promise<IStandardResponse<ICommentDocument>> => {
-  const deletedComment = await Comment.findByIdAndDelete(id);
+  const document = await Comment.findByIdAndDelete(id);
+  const deletedComment = document.value;
 
   if (!deletedComment) {
     throw new HttpError('Comentario no encontrado', 404);
