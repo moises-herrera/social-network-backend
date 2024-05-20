@@ -169,7 +169,7 @@ export const createOne = async (user: IUser): Promise<IAuthResponse> => {
     role: Role.User,
   });
 
-  const token = generateToken(createdUser._id);
+  const token = generateToken(createdUser.id);
 
   const response: IAuthResponse = {
     accessToken: token,
@@ -210,7 +210,7 @@ export const loginUser = async (auth: IAuth): Promise<IAuthResponse> => {
     throw new HttpError('Email o contraseña invalidos', 400);
   }
 
-  const token = generateToken(existingUser._id);
+  const token = generateToken(existingUser.id);
 
   const response: IAuthResponse = {
     accessToken: token,
