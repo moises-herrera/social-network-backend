@@ -218,7 +218,7 @@ export const createOne = async (
 
   await messageService.createOne({
     ...message,
-    conversation: conversationCreated._id,
+    conversation: conversationCreated.id,
   });
 
   const conversationMapped = await findAll(userId, '', {
