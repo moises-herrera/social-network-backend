@@ -151,7 +151,7 @@ export const getUserWithMostFollowers = async (): Promise<
 export const createOne = async (user: IUser): Promise<IAuthResponse> => {
   const { username, email, password } = user;
   const existingUser = await findOne({
-    $or: [{ username }, { email }],
+    $or: [{ username: username.toLowerCase().replace(/\s+/g, '') }, { email }],
   });
 
   if (existingUser) {
@@ -165,6 +165,7 @@ export const createOne = async (user: IUser): Promise<IAuthResponse> => {
 
   const createdUser = await User.create({
     ...user,
+    username: username.toLowerCase().replace(/\s+/g, ''),
     password: passwordEncrypted,
     role: Role.User,
   });
@@ -239,7 +240,10 @@ export const updateOne = async (
   }
 
   if (userToUpdate.username !== user.username) {
-    const existingUser = await findOne({ username: user.username });
+    user.username = user.username.toLowerCase().replace(/\s+/g, '');
+    const existingUser = await findOne({
+      username: user.username,
+    });
 
     if (existingUser) {
       throw new HttpError(
