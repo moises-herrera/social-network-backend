@@ -33,7 +33,7 @@ const UserSchema = new Schema<IUserDocument>(
     },
     role: {
       type: String,
-      enum: [Role.User, Role.Admin],
+      enum: Role,
       required: true,
     },
     isEmailVerified: {
