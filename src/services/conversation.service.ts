@@ -145,7 +145,7 @@ export const findAll = async (
   if (participantsNameFilter) {
     conversations = conversations.filter((conversation) => {
       const participants = (conversation.participants as any).map(
-        (participant: { fullName: any }) => participant.fullName
+        (participant: { fullName: string }) => participant.fullName
       );
 
       return participants.some((participant: any) =>
@@ -218,7 +218,7 @@ export const createOne = async (
 
   await messageService.createOne({
     ...message,
-    conversation: conversationCreated._id,
+    conversation: new Types.ObjectId(conversationCreated.id as string),
   });
 
   const conversationMapped = await findAll(userId, '', {

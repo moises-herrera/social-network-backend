@@ -151,7 +151,7 @@ export const getUserWithMostFollowers = async (): Promise<
 export const createOne = async (user: IUser): Promise<IAuthResponse> => {
   const { username, email, password } = user;
   const existingUser = await findOne({
-    $or: [{ username }, { email }],
+    $or: [{ username: username.toLowerCase().replace(/\s+/g, '') }, { email }],
   });
 
   if (existingUser) {
@@ -165,11 +165,12 @@ export const createOne = async (user: IUser): Promise<IAuthResponse> => {
 
   const createdUser = await User.create({
     ...user,
+    username: username.toLowerCase().replace(/\s+/g, ''),
     password: passwordEncrypted,
     role: Role.User,
   });
 
-  const token = generateToken(createdUser._id);
+  const token = generateToken(createdUser.id as string);
 
   const response: IAuthResponse = {
     accessToken: token,
@@ -199,18 +200,11 @@ export const loginUser = async (auth: IAuth): Promise<IAuthResponse> => {
     existingUser.password
   );
 
-  const lastUpdated = new Date((existingUser as any).updatedAt);
-  const mustUpdatePassword = !isPasswordValid && lastUpdated < new Date(2023, 8, 25);
-
-  if (mustUpdatePassword) {
-    throw new HttpError('Debe cambiar su contraseña', 400);
-  }
-
   if (!isPasswordValid) {
     throw new HttpError('Email o contraseña invalidos', 400);
   }
 
-  const token = generateToken(existingUser._id);
+  const token = generateToken(existingUser.id as string);
 
   const response: IAuthResponse = {
     accessToken: token,
@@ -246,7 +240,10 @@ export const updateOne = async (
   }
 
   if (userToUpdate.username !== user.username) {
-    const existingUser = await findOne({ username: user.username });
+    user.username = user.username.toLowerCase().replace(/\s+/g, '');
+    const existingUser = await findOne({
+      username: user.username,
+    });
 
     if (existingUser) {
       throw new HttpError(

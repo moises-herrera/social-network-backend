@@ -1,4 +1,4 @@
-import { Model, Types } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 import { FileStored } from '.';
 
 /**

@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
-import { IStandardObject, RequestExtended } from 'src/interfaces';
+import {
+  INotification,
+  IStandardObject,
+  RequestExtended,
+} from 'src/interfaces';
 import {
   createOne,
   deleteOne,
@@ -8,6 +12,9 @@ import {
   updateOne,
 } from 'src/services/comment.service';
 import { handleHttpError } from 'src/utils';
+import * as postService from 'src/services/post.service';
+import * as notificationService from 'src/services/notification.service';
+import { Types } from 'mongoose';
 
 /**
  * Get all comments.
@@ -64,6 +71,22 @@ export const createComment = async (
 ): Promise<void> => {
   try {
     const comment = await createOne(req.body);
+    const { id: userId } = req;
+    const post = await postService.findById(comment.post.toString());
+    const authorId = post?.user.toString();
+
+    if (post && userId !== authorId) {
+      const notification: INotification = {
+        note: 'Ha comentado tu publicación.',
+        recipient: post.user,
+        sender: new Types.ObjectId(userId as string),
+        hasRead: false,
+        post: post._id as Types.ObjectId,
+        comment: comment._id as Types.ObjectId,
+      };
+
+      await notificationService.createOne(notification);
+    }
 
     res.send(comment);
   } catch (error) {
@@ -106,6 +129,22 @@ export const deleteComment = async (
     const { id } = req.params;
 
     const responseComment = await deleteOne(id);
+    
+    if (responseComment.data) {
+      const post = await postService.findById(
+        responseComment.data?.post.toString()
+      );
+      const authorId = post?.user.toString();
+
+      if (post && req.id !== authorId) {
+        await notificationService.deleteOne({
+          recipient: new Types.ObjectId(authorId),
+          sender: new Types.ObjectId(req.id as string),
+          post: new Types.ObjectId(post._id as string),
+          comment: new Types.ObjectId(id),
+        });
+      }
+    }
 
     res.send(responseComment);
   } catch (error) {
